@@ -8,31 +8,55 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var navigation = AppNavigationModel()
+    @State private var navigation: AppNavigationModel
+
+    init() {
+        let isUITesting = ProcessInfo.processInfo.arguments.contains("-UITesting")
+        _navigation = State(initialValue: AppNavigationModel(initialStage: isUITesting ? .login : .launch))
+    }
 
     var body: some View {
-        NavigationStack(path: $navigation.path) {
-            VStack(spacing: AppSpacing.large) {
-                Image(systemName: "rectangle.stack.badge.person.crop")
-                    .font(.system(size: 52, weight: .semibold))
-                    .foregroundStyle(AppColors.primary)
+        @Bindable var navigation = navigation
 
-                VStack(spacing: AppSpacing.small) {
-                    Text("CamCard Replica")
-                        .font(.title2.weight(.semibold))
-                        .foregroundStyle(AppColors.textPrimary)
-
-                    Text("工程基线已就绪")
-                        .font(.subheadline)
-                        .foregroundStyle(AppColors.textSecondary)
+        Group {
+            switch navigation.stage {
+            case .launch:
+                LaunchView {
+                    withAnimation(.easeInOut(duration: 0.35)) {
+                        navigation.stage = .login
+                    }
+                }
+            case .login:
+                LoginView()
+            case .main:
+                NavigationStack(path: $navigation.path) {
+                    MainTabView()
+                        .navigationDestination(for: AppRoute.self) { route in
+                            destination(for: route)
+                        }
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(AppColors.pageBackground)
-            .navigationTitle("阶段 0")
         }
         .environment(navigation)
-        .accessibilityIdentifier("stage0.root")
+        .sheet(item: $navigation.placeholderAction) { action in
+            PlaceholderSheet(action: action)
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+        }
+    }
+
+    @ViewBuilder
+    private func destination(for route: AppRoute) -> some View {
+        switch route {
+        case .capture:
+            CaptureView()
+        case .review:
+            CardReviewView()
+        case .saveResult:
+            SaveResultView()
+        case let .cardDetail(id):
+            CardDetailView(cardID: id)
+        }
     }
 }
 

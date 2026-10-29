@@ -1,6 +1,12 @@
 import Foundation
 import Observation
 
+enum AppStage: Equatable {
+    case launch
+    case login
+    case main
+}
+
 enum AppTab: String, CaseIterable, Identifiable {
     case home
     case cards
@@ -11,12 +17,18 @@ enum AppTab: String, CaseIterable, Identifiable {
 }
 
 enum AppRoute: Hashable {
-    case login
     case capture
     case review
     case saveResult
     case cardDetail(UUID)
-    case placeholder(id: String)
+}
+
+struct PlaceholderAction: Identifiable, Hashable {
+    let id: String
+    let title: String
+    let message: String
+    let source: String
+    let symbol: String
 }
 
 enum CaptureFlowState: Equatable {
@@ -33,9 +45,15 @@ enum CaptureFlowState: Equatable {
 @MainActor
 @Observable
 final class AppNavigationModel {
+    var stage: AppStage
     var selectedTab: AppTab = .home
     var path: [AppRoute] = []
     var captureState: CaptureFlowState = .idle
+    var placeholderAction: PlaceholderAction?
+
+    init(initialStage: AppStage = .launch) {
+        stage = initialStage
+    }
 
     func push(_ route: AppRoute) {
         path.append(route)
@@ -47,5 +65,32 @@ final class AppNavigationModel {
 
     func resetCapture() {
         captureState = .idle
+    }
+
+    func showPlaceholder(
+        id: String,
+        title: String,
+        message: String = "该功能用于展示完整产品入口，演示版本暂未开放。",
+        source: String,
+        symbol: String = "sparkles"
+    ) {
+        placeholderAction = PlaceholderAction(
+            id: id,
+            title: title,
+            message: message,
+            source: source,
+            symbol: symbol
+        )
+    }
+
+    func enterMainApp() {
+        stage = .main
+        selectedTab = .home
+        path.removeAll()
+    }
+
+    func returnToCards() {
+        selectedTab = .cards
+        path.removeAll()
     }
 }
