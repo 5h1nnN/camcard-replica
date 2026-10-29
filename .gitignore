@@ -1,0 +1,78 @@
+# ========================================
+# Xcode
+# ========================================
+
+# Build products
+build/
+DerivedData/
+*.xcbuild/
+
+# User-specific settings
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# Legacy Xcode files
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+
+# ========================================
+# Swift Package Manager
+# ========================================
+
+.swiftpm/xcode/package.xcworkspace/
+.swiftpm/configuration/registries.json
+.build/
+
+# ========================================
+# CocoaPods
+# ========================================
+
+# Uncomment if dependencies are installed via pod install
+# Pods/
+
+# ========================================
+# Carthage
+# ========================================
+
+Carthage/Build/
+
+# ========================================
+# Fastlane
+# ========================================
+
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# ========================================
+# macOS
+# ========================================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ========================================
+# Temporary files
+# ========================================
+
+*.swp
+*.swo
+*~
+*.tmp
+
+# ========================================
+# Secrets / Signing
+# ========================================
+
+*.p12
+*.mobileprovision
+*.cer
+*.key
+.env
+.env.local
