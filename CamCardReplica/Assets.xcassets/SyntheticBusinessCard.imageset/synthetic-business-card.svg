@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="800" viewBox="0 0 1400 800">
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F8FBFF"/>
+      <stop offset="1" stop-color="#E8F1FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="800" rx="44" fill="url(#background)"/>
+  <rect width="30" height="800" fill="#1F6DE0"/>
+  <circle cx="1130" cy="170" r="122" fill="#1F6DE0" opacity="0.12"/>
+  <circle cx="1220" cy="250" r="82" fill="#163A75" opacity="0.10"/>
+  <g fill="#152036" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif">
+    <text x="110" y="170" font-size="70" font-weight="700">示例用户</text>
+    <text x="110" y="228" font-size="32" fill="#536079">DEMO USER · 产品设计师</text>
+    <text x="110" y="338" font-size="42" font-weight="600">远山创意工作室</text>
+    <text x="110" y="452" font-size="30">+86 138 0000 0000</text>
+    <text x="110" y="510" font-size="30">demo@example.com</text>
+    <text x="110" y="568" font-size="30">www.example.com</text>
+    <text x="110" y="626" font-size="30">示例市创新路 88 号</text>
+    <text x="110" y="716" font-size="23" fill="#71809A">SYNTHETIC OCR FIXTURE · NOT A REAL PERSON</text>
+  </g>
+  <g transform="translate(1080 465)" fill="none" stroke="#1F6DE0" stroke-width="18">
+    <rect width="190" height="132" rx="22"/>
+    <path d="M38 45h114M38 84h75" stroke-linecap="round"/>
+  </g>
+</svg>

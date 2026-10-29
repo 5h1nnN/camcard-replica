@@ -1,0 +1,15 @@
+{
+  "images" : [
+    {
+      "filename" : "synthetic-business-card.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
+  }
+}

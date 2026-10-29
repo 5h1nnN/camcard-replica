@@ -1,0 +1,35 @@
+import Foundation
+
+struct BusinessCardFixture: Equatable, Sendable {
+    let rawText: String
+    let name: String
+    let company: String
+    let jobTitle: String
+    let mobilePhone: String
+    let email: String
+    let website: String
+    let address: String
+    let assetName: String
+}
+
+enum FixtureCatalog {
+    static let syntheticBusinessCard = BusinessCardFixture(
+        rawText: """
+        示例用户 DEMO USER
+        远山创意工作室
+        产品设计师 Product Designer
+        +86 138 0000 0000
+        demo@example.com
+        www.example.com
+        示例市创新路 88 号
+        """,
+        name: "示例用户",
+        company: "远山创意工作室",
+        jobTitle: "产品设计师",
+        mobilePhone: "+86 138 0000 0000",
+        email: "demo@example.com",
+        website: "www.example.com",
+        address: "示例市创新路 88 号",
+        assetName: "SyntheticBusinessCard"
+    )
+}
