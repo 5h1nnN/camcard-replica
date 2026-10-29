@@ -76,3 +76,5 @@ fastlane/test_output/
 *.key
 .env
 .env.local
+
+/AgentDocsLocal
