@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var navigation: AppNavigationModel
+    @State private var importSession = CardImportSession()
 
     init() {
         let isUITesting = ProcessInfo.processInfo.arguments.contains("-UITesting")
@@ -38,6 +39,7 @@ struct ContentView: View {
             }
         }
         .environment(navigation)
+        .environment(importSession)
         .sheet(item: $navigation.placeholderAction) { action in
             PlaceholderSheet(action: action)
                 .presentationDetents([.medium])

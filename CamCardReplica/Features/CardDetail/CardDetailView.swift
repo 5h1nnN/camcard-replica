@@ -3,9 +3,9 @@ import SwiftUI
 struct CardDetailView: View {
     let cardID: UUID
     @Environment(AppNavigationModel.self) private var navigation
+    @Environment(CardImportSession.self) private var importSession
     @Environment(\.dismiss) private var dismiss
     @State private var isFavorite = false
-    private let fixture = FixtureCatalog.syntheticBusinessCard
 
     var body: some View {
         VStack(spacing: 0) {
@@ -82,11 +82,11 @@ struct CardDetailView: View {
     private var identityCard: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top, spacing: 14) {
-                DemoAvatar(initials: "示", size: 68, color: .purple)
+                DemoAvatar(initials: initials, size: 68, color: .purple)
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(fixture.name)
+                    Text(display(importSession.draft.name, fallback: "未填写姓名"))
                         .font(.title2.weight(.semibold))
-                    Text(fixture.jobTitle)
+                    Text(display(importSession.draft.jobTitle, fallback: "未填写职位"))
                         .font(.body)
                         .foregroundStyle(AppColors.textSecondary)
                 }
@@ -100,8 +100,8 @@ struct CardDetailView: View {
             }
 
             VStack(alignment: .leading, spacing: 10) {
-                Label(fixture.mobilePhone, systemImage: "phone.fill")
-                Label(fixture.address, systemImage: "mappin.and.ellipse")
+                Label(display(importSession.draft.mobilePhone, fallback: "未填写电话"), systemImage: "phone.fill")
+                Label(display(importSession.draft.address, fallback: "未填写地址"), systemImage: "mappin.and.ellipse")
                     .lineLimit(2)
             }
             .font(.subheadline)
@@ -164,11 +164,11 @@ struct CardDetailView: View {
 
     private var contactSection: some View {
         VStack(spacing: 0) {
-            contactRow(fixture.mobilePhone, "phone.fill", trailingSymbol: "message.fill", id: "phone")
+            contactRow(display(importSession.draft.mobilePhone, fallback: "未填写电话"), "phone.fill", trailingSymbol: "message.fill", id: "phone")
             Divider().padding(.leading, 52)
-            contactRow(fixture.email, "envelope.fill", id: "email")
+            contactRow(display(importSession.draft.email, fallback: "未填写邮箱"), "envelope.fill", id: "email")
             Divider().padding(.leading, 52)
-            contactRow(fixture.address, "mappin.and.ellipse", id: "addressField")
+            contactRow(display(importSession.draft.address, fallback: "未填写地址"), "mappin.and.ellipse", id: "addressField")
             Divider().padding(.leading, 52)
             Button {
                 placeholder("moreFields", "更多字段", "chevron.down")
@@ -258,6 +258,14 @@ struct CardDetailView: View {
             symbol: symbol
         )
     }
+
+    private var initials: String {
+        importSession.draft.name.first.map(String.init) ?? "名"
+    }
+
+    private func display(_ value: String, fallback: String) -> String {
+        value.isEmpty ? fallback : value
+    }
 }
 
 #Preview {
@@ -265,4 +273,5 @@ struct CardDetailView: View {
         CardDetailView(cardID: FixtureCatalog.demoID)
     }
     .environment(AppNavigationModel(initialStage: .main))
+    .environment(CardImportSession())
 }

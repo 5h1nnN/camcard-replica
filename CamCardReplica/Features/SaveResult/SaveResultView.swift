@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SaveResultView: View {
     @Environment(AppNavigationModel.self) private var navigation
+    @Environment(CardImportSession.self) private var importSession
 
     var body: some View {
         VStack(spacing: 0) {
@@ -24,6 +25,9 @@ struct SaveResultView: View {
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .screenIdentifier("screen.result")
+        .onAppear {
+            navigation.captureState = .completed
+        }
     }
 
     private var successHeader: some View {
@@ -61,13 +65,22 @@ struct SaveResultView: View {
                 navigation.push(.cardDetail(FixtureCatalog.demoID))
             } label: {
                 HStack(spacing: 14) {
-                    DemoBusinessCardImage(compact: true)
-                        .frame(width: 114)
+                    Group {
+                        if let image = importSession.selectedImage {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFit()
+                                .clipShape(RoundedRectangle(cornerRadius: 6))
+                        } else {
+                            DemoBusinessCardImage(compact: true)
+                        }
+                    }
+                    .frame(width: 114)
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(FixtureCatalog.syntheticBusinessCard.name)
+                        Text(importSession.draft.name.isEmpty ? "未填写姓名" : importSession.draft.name)
                             .font(.title2)
                             .foregroundStyle(AppColors.textPrimary)
-                        Text(FixtureCatalog.syntheticBusinessCard.jobTitle)
+                        Text(importSession.draft.jobTitle.isEmpty ? "未填写职位" : importSession.draft.jobTitle)
                             .font(.body)
                             .foregroundStyle(AppColors.textSecondary)
                     }
@@ -136,4 +149,5 @@ struct SaveResultView: View {
         SaveResultView()
     }
     .environment(AppNavigationModel(initialStage: .main))
+    .environment(CardImportSession())
 }

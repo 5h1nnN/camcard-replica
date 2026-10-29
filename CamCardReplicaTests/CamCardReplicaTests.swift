@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 @testable import CamCardReplica
 
 @MainActor
@@ -57,5 +58,134 @@ final class CamCardReplicaTests: XCTestCase {
         XCTAssertTrue(fixture.email.hasSuffix("@example.com"))
         XCTAssertEqual(fixture.assetName, "SyntheticBusinessCard")
         XCTAssertTrue(fixture.rawText.contains(fixture.company))
+    }
+
+    func testChineseCardParsingKeepsMissingWebsiteEmpty() {
+        let draft = BusinessCardFieldParser.parse(
+            """
+            林晓
+            星河科技有限公司
+            产品经理
+            手机：138 1234 5678
+            邮箱：lin.xiao@example.com
+            上海市浦东新区创新路 88 号
+            """
+        )
+
+        XCTAssertEqual(draft.name, "林晓")
+        XCTAssertEqual(draft.company, "星河科技有限公司")
+        XCTAssertEqual(draft.jobTitle, "产品经理")
+        XCTAssertEqual(draft.mobilePhone, "138 1234 5678")
+        XCTAssertEqual(draft.email, "lin.xiao@example.com")
+        XCTAssertEqual(draft.address, "上海市浦东新区创新路 88 号")
+        XCTAssertTrue(draft.website.isEmpty)
+    }
+
+    func testEnglishCardParsingExtractsOnlyVisibleValues() {
+        let draft = BusinessCardFieldParser.parse(
+            """
+            Avery Stone
+            Product Designer
+            Northwind Studio
+            +1 415 555 0198
+            avery@example.com
+            https://www.example.com/avery
+            88 Innovation Road, Seattle
+            """
+        )
+
+        XCTAssertEqual(draft.name, "Avery Stone")
+        XCTAssertEqual(draft.company, "Northwind Studio")
+        XCTAssertEqual(draft.jobTitle, "Product Designer")
+        XCTAssertEqual(draft.mobilePhone, "+1 415 555 0198")
+        XCTAssertEqual(draft.email, "avery@example.com")
+        XCTAssertEqual(draft.website, "https://www.example.com/avery")
+        XCTAssertEqual(draft.address, "88 Innovation Road, Seattle")
+    }
+
+    func testRecognizedTextIsSortedByRowsThenColumns() {
+        let lines = [
+            RecognizedTextLine(text: "right", boundingBox: CGRect(x: 0.6, y: 0.8, width: 0.2, height: 0.1)),
+            RecognizedTextLine(text: "bottom", boundingBox: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.1)),
+            RecognizedTextLine(text: "left", boundingBox: CGRect(x: 0.1, y: 0.81, width: 0.2, height: 0.1))
+        ]
+
+        XCTAssertEqual(RecognizedTextReadingOrder.sorted(lines).map(\.text), ["left", "right", "bottom"])
+    }
+
+    func testVisionRecognizesEnglishSyntheticCard() async throws {
+        let imageData = makeTextImage(
+            lines: ["AVERY STONE", "NORTHWIND STUDIO", "avery@example.com", "+1 415 555 0198"]
+        )
+
+        let rawText = try await VisionTextRecognizer.recognizeText(in: imageData)
+
+        XCTAssertFalse(rawText.isEmpty)
+        XCTAssertTrue(rawText.localizedCaseInsensitiveContains("AVERY"))
+        XCTAssertTrue(rawText.localizedCaseInsensitiveContains("example.com"))
+    }
+
+    func testVisionRecognizesChineseSyntheticCard() async throws {
+        let imageData = makeTextImage(
+            lines: ["林晓", "星河科技有限公司", "产品经理", "138 1234 5678"],
+            fontName: "PingFangSC-Semibold"
+        )
+
+        let rawText = try await VisionTextRecognizer.recognizeText(in: imageData)
+
+        XCTAssertFalse(rawText.isEmpty)
+        XCTAssertTrue(rawText.contains("138") || rawText.contains("林晓") || rawText.contains("星河"))
+    }
+
+    func testVisionReturnsEmptyTextForBlankImage() async throws {
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 1000, height: 600))
+        let data = renderer.pngData { context in
+            UIColor.white.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 1000, height: 600))
+        }
+
+        let rawText = try await VisionTextRecognizer.recognizeText(in: data)
+
+        XCTAssertTrue(rawText.isEmpty)
+    }
+
+    func testManualEntryPreservesImageAndStartsWithEmptyDraft() {
+        let imageData = Data([0x01, 0x02, 0x03])
+        let session = CardImportSession(imageData: imageData)
+        session.continueWithManualEntry()
+
+        XCTAssertTrue(session.isManualEntry)
+        XCTAssertEqual(session.state, .ready)
+        XCTAssertEqual(session.draft, .empty)
+        XCTAssertEqual(session.imageData, imageData)
+    }
+
+    func testStartingAndCancellingSelectionDoesNotDestroyExistingDraft() {
+        let session = CardImportSession(draft: .fixture)
+
+        session.beginNewImport()
+
+        XCTAssertEqual(session.draft, .fixture)
+        XCTAssertEqual(session.state, .idle)
+    }
+
+    private func makeTextImage(lines: [String], fontName: String = "HelveticaNeue-Bold") -> Data {
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 1400, height: 800))
+        return renderer.pngData { context in
+            UIColor.white.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 1400, height: 800))
+
+            let font = UIFont(name: fontName, size: 64) ?? UIFont.systemFont(ofSize: 64, weight: .bold)
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: font,
+                .foregroundColor: UIColor.black
+            ]
+            for (index, line) in lines.enumerated() {
+                NSString(string: line).draw(
+                    at: CGPoint(x: 90, y: 80 + CGFloat(index) * 145),
+                    withAttributes: attributes
+                )
+            }
+        }
     }
 }

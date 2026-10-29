@@ -1,10 +1,19 @@
+import PhotosUI
 import SwiftUI
 
 struct CaptureView: View {
     @Environment(AppNavigationModel.self) private var navigation
+    @Environment(CardImportSession.self) private var importSession
     @Environment(\.dismiss) private var dismiss
     @State private var precisionMode = 0
     @State private var captureMode = 2
+    @State private var selectedPhoto: PhotosPickerItem?
+    @State private var activeAlert: CaptureAlert?
+    @State private var didPrepareImport = false
+
+    private var isUITesting: Bool {
+        ProcessInfo.processInfo.arguments.contains("-UITesting")
+    }
 
     var body: some View {
         ZStack {
@@ -20,18 +29,57 @@ struct CaptureView: View {
             VStack(spacing: 18) {
                 captureHeader
                     .padding(.top, 8)
-
                 viewfinder
-
                 captureModes
                 captureControls
                     .padding(.bottom, 12)
             }
             .padding(.horizontal, 22)
+
+            if importSession.state == .loadingImage || importSession.state == .recognizing {
+                recognitionProgress
+            }
         }
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .screenIdentifier("screen.capture")
+        .onAppear {
+            guard !didPrepareImport else { return }
+            didPrepareImport = true
+            importSession.beginNewImport()
+            navigation.captureState = .idle
+        }
+        .onChange(of: selectedPhoto) { _, item in
+            guard let item else { return }
+            Task { await importPhoto(item) }
+        }
+        .alert(item: $activeAlert) { alert in
+            switch alert {
+            case .noText:
+                Alert(
+                    title: Text("未识别到文字"),
+                    message: Text("可以重新选择更清晰的名片图片，或保留当前图片并手动填写。"),
+                    primaryButton: .default(Text("手动填写")) {
+                        importSession.continueWithManualEntry()
+                        navigation.captureState = .reviewing
+                        navigation.push(.review)
+                    },
+                    secondaryButton: .cancel(Text("重新选择")) {
+                        selectedPhoto = nil
+                        navigation.captureState = .selectingImage
+                    }
+                )
+            case let .failure(message):
+                Alert(
+                    title: Text("无法识别图片"),
+                    message: Text(message),
+                    dismissButton: .default(Text("重新选择")) {
+                        selectedPhoto = nil
+                        navigation.captureState = .selectingImage
+                    }
+                )
+            }
+        }
     }
 
     private var cameraTexture: some View {
@@ -53,9 +101,7 @@ struct CaptureView: View {
 
     private var captureHeader: some View {
         HStack(spacing: 14) {
-            Button {
-                dismiss()
-            } label: {
+            Button { dismiss() } label: {
                 Image(systemName: "xmark")
                     .font(.title2.weight(.medium))
                     .foregroundStyle(.white)
@@ -159,9 +205,7 @@ struct CaptureView: View {
 
     private var captureControls: some View {
         HStack {
-            Button {
-                navigation.push(.review)
-            } label: {
+            PhotosPicker(selection: $selectedPhoto, matching: .images) {
                 VStack(spacing: 7) {
                     Image(systemName: "photo.on.rectangle")
                         .font(.title2)
@@ -170,22 +214,26 @@ struct CaptureView: View {
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
+                .contentShape(Rectangle())
             }
-            .accessibilityIdentifier("core.capture.albumDemo")
+            .buttonStyle(.plain)
+            .accessibilityLabel("从相册选择名片")
+            .accessibilityIdentifier("core.capture.album")
 
-            Button {
-                navigation.push(.review)
-            } label: {
-                Circle()
-                    .fill(AppColors.primary)
-                    .frame(width: 76, height: 76)
-                    .overlay {
-                        Circle().stroke(.white.opacity(0.72), lineWidth: 10)
-                    }
-                    .shadow(color: .black.opacity(0.2), radius: 8)
+            if isUITesting {
+                Button(action: openFixtureForUITest) {
+                    shutterLabel
+                }
+                .accessibilityLabel("载入合成测试名片")
+                .accessibilityIdentifier("core.capture.shutter")
+            } else {
+                PhotosPicker(selection: $selectedPhoto, matching: .images) {
+                    shutterLabel
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("选择一张名片图片")
+                .accessibilityIdentifier("core.capture.shutter")
             }
-            .accessibilityLabel("拍摄演示名片")
-            .accessibilityIdentifier("core.capture.shutter")
 
             Button {
                 navigation.showPlaceholder(
@@ -207,6 +255,71 @@ struct CaptureView: View {
             .accessibilityIdentifier("placeholder.capture.stack")
         }
     }
+
+    private var shutterLabel: some View {
+        Circle()
+            .fill(AppColors.primary)
+            .frame(width: 76, height: 76)
+            .overlay {
+                Circle().stroke(.white.opacity(0.72), lineWidth: 10)
+            }
+            .shadow(color: .black.opacity(0.2), radius: 8)
+    }
+
+    private var recognitionProgress: some View {
+        VStack(spacing: 14) {
+            ProgressView()
+                .tint(.white)
+                .scaleEffect(1.2)
+            Text(importSession.state == .loadingImage ? "正在读取图片…" : "正在本地识别名片…")
+                .font(.headline)
+                .foregroundStyle(.white)
+            Text("图片仅在设备上处理")
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.72))
+        }
+        .padding(.horizontal, 32)
+        .padding(.vertical, 24)
+        .background(.black.opacity(0.78), in: RoundedRectangle(cornerRadius: 16))
+        .accessibilityIdentifier("core.capture.recognizing")
+    }
+
+    private func openFixtureForUITest() {
+        importSession.loadFixture()
+        navigation.captureState = .reviewing
+        navigation.push(.review)
+    }
+
+    private func importPhoto(_ item: PhotosPickerItem) async {
+        navigation.captureState = .previewing
+        let outcome = await importSession.importPhoto(item)
+        selectedPhoto = nil
+        switch outcome {
+        case .cancelled:
+            navigation.captureState = .idle
+        case .ready:
+            navigation.captureState = .reviewing
+            navigation.push(.review)
+        case .noText:
+            navigation.captureState = .failed(message: "未识别到文字")
+            activeAlert = .noText
+        case let .failed(message):
+            navigation.captureState = .failed(message: message)
+            activeAlert = .failure(message)
+        }
+    }
+}
+
+private enum CaptureAlert: Identifiable {
+    case noText
+    case failure(String)
+
+    var id: String {
+        switch self {
+        case .noText: "noText"
+        case let .failure(message): "failure-\(message)"
+        }
+    }
 }
 
 #Preview {
@@ -214,4 +327,5 @@ struct CaptureView: View {
         CaptureView()
     }
     .environment(AppNavigationModel(initialStage: .main))
+    .environment(CardImportSession())
 }

@@ -1,16 +1,11 @@
 import SwiftUI
+import UIKit
 
 struct CardReviewView: View {
     @Environment(AppNavigationModel.self) private var navigation
+    @Environment(CardImportSession.self) private var importSession
     @Environment(\.dismiss) private var dismiss
     @State private var usesPrecision = false
-    @State private var name = FixtureCatalog.syntheticBusinessCard.name
-    @State private var mobilePhone = FixtureCatalog.syntheticBusinessCard.mobilePhone
-    @State private var email = FixtureCatalog.syntheticBusinessCard.email
-    @State private var company = FixtureCatalog.syntheticBusinessCard.company
-    @State private var jobTitle = FixtureCatalog.syntheticBusinessCard.jobTitle
-    @State private var website = FixtureCatalog.syntheticBusinessCard.website
-    @State private var address = FixtureCatalog.syntheticBusinessCard.address
 
     var body: some View {
         VStack(spacing: 0) {
@@ -19,27 +14,38 @@ struct CardReviewView: View {
             ScrollView {
                 LazyVStack(spacing: 12) {
                     cardPreview
+                    if importSession.isManualEntry {
+                        manualEntryBanner
+                    }
                     recognitionSettings
                     languageRow
                     ReviewFieldSection(title: "姓名", showsAdd: false) {
-                        fieldRow(type: "姓名", text: $name)
+                        fieldRow(type: "姓名", text: draftBinding(\.name))
                     }
                     ReviewFieldSection(title: "电话", showsAdd: true, addAction: addPhone) {
-                        fieldRow(type: "手机", text: $mobilePhone)
+                        fieldRow(type: "手机", text: draftBinding(\.mobilePhone))
+                        Divider().padding(.leading, 110)
+                        fieldRow(type: "座机", text: draftBinding(\.officePhone))
                     }
                     ReviewFieldSection(title: "邮箱", showsAdd: true, addAction: addEmail) {
-                        fieldRow(type: "工作邮箱", text: $email)
+                        fieldRow(type: "工作邮箱", text: draftBinding(\.email))
                     }
                     ReviewFieldSection(title: "公司", showsAdd: true, addAction: addCompany) {
-                        fieldRow(type: "公司", text: $company)
+                        fieldRow(type: "公司", text: draftBinding(\.company))
                         Divider().padding(.leading, 110)
-                        fieldRow(type: "职位", text: $jobTitle)
+                        fieldRow(type: "职位", text: draftBinding(\.jobTitle))
                     }
                     ReviewFieldSection(title: "网站", showsAdd: true, addAction: addWebsite) {
-                        fieldRow(type: "网站", text: $website)
+                        fieldRow(type: "网站", text: draftBinding(\.website))
                     }
                     ReviewFieldSection(title: "地址", showsAdd: true, addAction: addAddress) {
-                        fieldRow(type: "工作地址", text: $address)
+                        fieldRow(type: "工作地址", text: draftBinding(\.address))
+                    }
+                    ReviewFieldSection(title: "备注", showsAdd: false) {
+                        fieldRow(type: "备注", text: draftBinding(\.notes))
+                    }
+                    if !importSession.draft.ocrRawText.isEmpty {
+                        rawTextSection
                     }
                 }
                 .padding(.bottom, 24)
@@ -68,6 +74,7 @@ struct CardReviewView: View {
                 .font(.title3.weight(.semibold))
             Spacer()
             Button("保存") {
+                navigation.captureState = .saving
                 navigation.push(.saveResult)
             }
             .font(.headline)
@@ -81,7 +88,17 @@ struct CardReviewView: View {
 
     private var cardPreview: some View {
         ZStack(alignment: .bottomTrailing) {
-            DemoBusinessCardImage()
+            Group {
+                if let image = importSession.selectedImage {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .accessibilityLabel("已选择的名片图片")
+                } else {
+                    DemoBusinessCardImage()
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             Button {
                 navigation.showPlaceholder(
                     id: "review.crop",
@@ -102,6 +119,21 @@ struct CardReviewView: View {
         }
         .padding(.horizontal, AppSize.pageInset)
         .padding(.top, 12)
+    }
+
+    private var manualEntryBanner: some View {
+        Label {
+            Text("图片中未识别到文字，当前为手动填写模式。")
+                .font(.subheadline)
+        } icon: {
+            Image(systemName: "pencil.and.list.clipboard")
+        }
+        .foregroundStyle(AppColors.textPrimary)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(Color.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal, AppSize.pageInset)
+        .accessibilityIdentifier("core.review.manualEntry")
     }
 
     private var recognitionSettings: some View {
@@ -136,7 +168,7 @@ struct CardReviewView: View {
             navigation.showPlaceholder(
                 id: "review.language",
                 title: "更换识别语言",
-                message: "当前视觉基线展示简体中文与英文；多语言 OCR 将在阶段 2 接入。",
+                message: "当前本地 OCR 已同时启用简体中文和英文；其他语言将在后续扩展。",
                 source: "核对信息",
                 symbol: "character.book.closed.fill"
             )
@@ -156,6 +188,24 @@ struct CardReviewView: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("placeholder.review.language")
+    }
+
+    private var rawTextSection: some View {
+        DisclosureGroup {
+            Text(importSession.draft.ocrRawText)
+                .font(.footnote.monospaced())
+                .foregroundStyle(AppColors.textSecondary)
+                .textSelection(.enabled)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 10)
+        } label: {
+            Label("OCR 原始文本", systemImage: "doc.text.magnifyingglass")
+                .font(.headline)
+                .foregroundStyle(AppColors.textPrimary)
+        }
+        .padding(16)
+        .background(.white)
+        .accessibilityIdentifier("core.review.rawText")
     }
 
     private func fieldRow(type: String, text: Binding<String>) -> some View {
@@ -200,7 +250,7 @@ struct CardReviewView: View {
         navigation.showPlaceholder(
             id: "review.add.\(type)",
             title: "添加\(type)",
-            message: "阶段 1 保留字段增删入口；多值字段模型将在后续阶段接入。",
+            message: "当前草稿支持一个主要值；多电话和多邮箱将在后续扩展。",
             source: "核对信息",
             symbol: symbol
         )
@@ -211,6 +261,13 @@ struct CardReviewView: View {
     private func addCompany() { showAddPlaceholder("公司", symbol: "building.2") }
     private func addWebsite() { showAddPlaceholder("网站", symbol: "globe") }
     private func addAddress() { showAddPlaceholder("地址", symbol: "mappin.and.ellipse") }
+
+    private func draftBinding(_ keyPath: WritableKeyPath<BusinessCardDraft, String>) -> Binding<String> {
+        Binding(
+            get: { importSession.draft[keyPath: keyPath] },
+            set: { importSession.draft[keyPath: keyPath] = $0 }
+        )
+    }
 }
 
 private struct ReviewFieldSection<Content: View>: View {
@@ -260,4 +317,5 @@ private struct ReviewFieldSection<Content: View>: View {
         CardReviewView()
     }
     .environment(AppNavigationModel(initialStage: .main))
+    .environment(CardImportSession())
 }
