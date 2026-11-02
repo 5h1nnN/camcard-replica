@@ -56,7 +56,7 @@ struct HomeView: View {
     }
 
     private var digitalCard: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: -18) {
             ZStack(alignment: .topLeading) {
                 RoundedRectangle(cornerRadius: AppRadius.large, style: .continuous)
                     .fill(
@@ -97,6 +97,8 @@ struct HomeView: View {
                 }
                 .padding(24)
             }
+            .zIndex(1)
+            .shadow(color: AppShadow.cardColor, radius: 8, y: 3)
 
             HStack(spacing: 0) {
                 FeatureIconButton(title: "编辑名片", symbol: "pencil") {
@@ -112,10 +114,18 @@ struct HomeView: View {
                     placeholder("digital.switch", "切换名片", symbol: "arrow.left.arrow.right")
                 }
             }
-            .padding(.vertical, 12)
+            .padding(.top, 30)
+            .padding(.bottom, 12)
             .background(.white)
+            .clipShape(
+                UnevenRoundedRectangle(
+                    bottomLeadingRadius: AppRadius.large,
+                    bottomTrailingRadius: AppRadius.large,
+                    style: .continuous
+                )
+            )
         }
-        .clipShape(RoundedRectangle(cornerRadius: AppRadius.large, style: .continuous))
+        .compositingGroup()
         .shadow(color: AppShadow.cardColor, radius: AppShadow.cardRadius, y: AppShadow.cardY)
     }
 

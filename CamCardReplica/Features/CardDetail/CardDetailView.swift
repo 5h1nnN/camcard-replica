@@ -234,11 +234,10 @@ struct CardDetailView: View {
                     .foregroundStyle(AppColors.textPrimary)
                     .lineLimit(2)
                 Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
             }
             .padding(16)
+            .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier(storedCard == nil ? "placeholder.detail.group" : "core.detail.group")

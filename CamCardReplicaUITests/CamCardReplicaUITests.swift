@@ -65,6 +65,7 @@ final class CamCardReplicaUITests: XCTestCase {
 
         XCTAssertTrue(element("screen.cards").waitForExistence(timeout: 3))
         XCTAssertTrue(element("core.cards.empty").waitForExistence(timeout: 2))
+        XCTAssertTrue(app.buttons["core.cards.demoDetail"].exists)
 
         let search = app.textFields["core.cards.search"]
         search.tap()
@@ -118,6 +119,11 @@ final class CamCardReplicaUITests: XCTestCase {
         groupedCardButton.tap()
         XCTAssertTrue(element("screen.detail").waitForExistence(timeout: 3))
         XCTAssertTrue(app.staticTexts["课程同学"].waitForExistence(timeout: 2))
+
+        let groupRow = element("core.detail.group")
+        XCTAssertTrue(groupRow.waitForExistence(timeout: 2))
+        groupRow.coordinate(withNormalizedOffset: CGVector(dx: 0.95, dy: 0.5)).tap()
+        XCTAssertTrue(element("screen.groupAssignment").waitForExistence(timeout: 3))
     }
 
     func testSavedCardCanCreateAndThenUpdateASystemContact() {
@@ -154,6 +160,9 @@ final class CamCardReplicaUITests: XCTestCase {
         app.buttons["core.result.returnCards"].tap()
         XCTAssertTrue(element("screen.cards").waitForExistence(timeout: 3))
         XCTAssertTrue(savedCardButton.waitForExistence(timeout: 3))
+        XCTAssertFalse(app.buttons["core.cards.demoDetail"].exists)
+        XCTAssertTrue(app.staticTexts["产品设计师"].exists)
+        XCTAssertFalse(app.staticTexts["+86 138 0000 0000"].exists)
 
         app.terminate()
         app.launchArguments = ["-UITesting", "-AppleInterfaceStyle", "Light"]

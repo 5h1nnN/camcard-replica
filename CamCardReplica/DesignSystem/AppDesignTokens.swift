@@ -29,7 +29,7 @@ enum AppRadius {
 enum AppSize {
     static let pageInset: CGFloat = 16
     static let tabBarHeight: CGFloat = 72
-    static let scanButton: CGFloat = 64
+    static let scanButton: CGFloat = 52
     static let controlHeight: CGFloat = 48
 }
 

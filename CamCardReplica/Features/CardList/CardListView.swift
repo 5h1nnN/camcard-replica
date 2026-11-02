@@ -234,36 +234,38 @@ struct CardListView: View {
                 }
             }
 
-            Button {
-                searchIsFocused = false
-                navigation.push(.cardDetail(FixtureCatalog.demoID))
-            } label: {
-                HStack(spacing: 14) {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(AppColors.primary.opacity(0.12))
-                        .frame(width: 102, height: 76)
-                        .overlay {
-                            Image(systemName: "person.text.rectangle.fill")
-                                .font(.system(size: 33))
-                                .foregroundStyle(AppColors.primary)
+            if cards.isEmpty {
+                Button {
+                    searchIsFocused = false
+                    navigation.push(.cardDetail(FixtureCatalog.demoID))
+                } label: {
+                    HStack(spacing: 14) {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(AppColors.primary.opacity(0.12))
+                            .frame(width: cardThumbnailSize.width, height: cardThumbnailSize.height)
+                            .overlay {
+                                Image(systemName: "person.text.rectangle.fill")
+                                    .font(.system(size: 33))
+                                    .foregroundStyle(AppColors.primary)
+                            }
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text("30 秒快速认识 Cardly")
+                                .font(.headline)
+                                .foregroundStyle(AppColors.textPrimary)
+                            Text("体验智能的名片识别、核对和管理")
+                                .font(.subheadline)
+                                .foregroundStyle(AppColors.textSecondary)
+                                .multilineTextAlignment(.leading)
                         }
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text("30 秒快速认识 Cardly")
-                            .font(.headline)
-                            .foregroundStyle(AppColors.textPrimary)
-                        Text("体验智能的名片识别、核对和管理")
-                            .font(.subheadline)
-                            .foregroundStyle(AppColors.textSecondary)
-                            .multilineTextAlignment(.leading)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.tertiary)
                     }
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .foregroundStyle(.tertiary)
+                    .padding(.vertical, 4)
                 }
-                .padding(.vertical, 4)
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("core.cards.demoDetail")
             }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier("core.cards.demoDetail")
         }
         .padding(18)
         .background(.white, in: RoundedRectangle(cornerRadius: AppRadius.medium))
@@ -297,19 +299,16 @@ struct CardListView: View {
         } label: {
             HStack(spacing: 14) {
                 StoredCardImage(relativePath: card.originalImagePath)
-                    .frame(width: 102, height: 76)
-                VStack(alignment: .leading, spacing: 5) {
+                    .frame(width: cardThumbnailSize.width, height: cardThumbnailSize.height)
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                VStack(alignment: .leading, spacing: 8) {
                     Text(card.name.isEmpty ? "未填写姓名" : card.name)
                         .font(.headline)
                         .foregroundStyle(AppColors.textPrimary)
                         .lineLimit(2)
-                    Text([card.company, card.jobTitle].filter { !$0.isEmpty }.joined(separator: " · "))
+                    Text(card.jobTitle.isEmpty ? "未填写职位" : card.jobTitle)
                         .font(.subheadline)
                         .foregroundStyle(AppColors.textSecondary)
-                        .lineLimit(1)
-                    Text(card.mobilePhone.isEmpty ? card.email : card.mobilePhone)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
                         .lineLimit(1)
                 }
                 Spacer()
@@ -326,10 +325,28 @@ struct CardListView: View {
     private func placeholder(_ id: String, _ title: String, symbol: String) {
         navigation.showPlaceholder(id: "cards.\(id)", title: title, source: "名片夹", symbol: symbol)
     }
+
+    private var cardThumbnailSize: CGSize {
+        CGSize(width: 102, height: 76)
+    }
 }
 
 #Preview {
     CardListView()
         .environment(AppNavigationModel(initialStage: .main))
         .modelContainer(for: [BusinessCard.self, CardGroup.self], inMemory: true)
+}
+
+#Preview("有名片") {
+    let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(
+        for: BusinessCard.self,
+        CardGroup.self,
+        configurations: configuration
+    )
+    container.mainContext.insert(BusinessCard(draft: .fixture))
+
+    return CardListView()
+        .environment(AppNavigationModel(initialStage: .main))
+        .modelContainer(container)
 }

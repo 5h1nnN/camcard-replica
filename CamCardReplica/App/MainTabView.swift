@@ -50,10 +50,9 @@ private struct MainTabBar: View {
                         .frame(width: AppSize.scanButton, height: AppSize.scanButton)
                         .shadow(color: AppColors.primary.opacity(0.32), radius: 10, y: 4)
                     Image(systemName: "camera.fill")
-                        .font(.title2)
+                        .font(.system(size: 20, weight: .semibold))
                         .foregroundStyle(.white)
                 }
-                .offset(y: -14)
                 .frame(maxWidth: .infinity)
             }
             .accessibilityLabel("拍摄名片")
