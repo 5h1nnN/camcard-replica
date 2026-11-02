@@ -1,8 +1,10 @@
 import SwiftUI
+import SwiftData
 
 struct SaveResultView: View {
     @Environment(AppNavigationModel.self) private var navigation
     @Environment(CardImportSession.self) private var importSession
+    @Query(sort: \BusinessCard.updatedAt, order: .reverse) private var cards: [BusinessCard]
 
     var body: some View {
         VStack(spacing: 0) {
@@ -62,7 +64,9 @@ struct SaveResultView: View {
     private var summaryCard: some View {
         VStack(spacing: 16) {
             Button {
-                navigation.push(.cardDetail(FixtureCatalog.demoID))
+                if let cardID = importSession.savedCardID {
+                    navigation.push(.cardDetail(cardID))
+                }
             } label: {
                 HStack(spacing: 14) {
                     Group {
@@ -77,10 +81,10 @@ struct SaveResultView: View {
                     }
                     .frame(width: 114)
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(importSession.draft.name.isEmpty ? "未填写姓名" : importSession.draft.name)
+                        Text(summaryDraft.name.isEmpty ? "未填写姓名" : summaryDraft.name)
                             .font(.title2)
                             .foregroundStyle(AppColors.textPrimary)
-                        Text(importSession.draft.jobTitle.isEmpty ? "未填写职位" : importSession.draft.jobTitle)
+                        Text(summaryDraft.jobTitle.isEmpty ? "未填写职位" : summaryDraft.jobTitle)
                             .font(.body)
                             .foregroundStyle(AppColors.textSecondary)
                     }
@@ -106,6 +110,10 @@ struct SaveResultView: View {
 
     private func actionButton(_ title: String, _ symbol: String, _ id: String) -> some View {
         FeatureIconButton(title: title, symbol: symbol) {
+            if id == "note" {
+                navigation.push(.review)
+                return
+            }
             navigation.showPlaceholder(
                 id: "result.\(id)",
                 title: title,
@@ -142,6 +150,14 @@ struct SaveResultView: View {
             .accessibilityIdentifier("core.result.returnCards")
         }
     }
+
+    private var summaryDraft: BusinessCardDraft {
+        guard let savedCardID = importSession.savedCardID,
+              let card = cards.first(where: { $0.id == savedCardID }) else {
+            return importSession.draft
+        }
+        return card.draft
+    }
 }
 
 #Preview {
@@ -150,4 +166,5 @@ struct SaveResultView: View {
     }
     .environment(AppNavigationModel(initialStage: .main))
     .environment(CardImportSession())
+    .modelContainer(for: BusinessCard.self, inMemory: true)
 }

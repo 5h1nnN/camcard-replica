@@ -1,11 +1,16 @@
 import SwiftUI
+import SwiftData
 
 struct CardDetailView: View {
     let cardID: UUID
     @Environment(AppNavigationModel.self) private var navigation
     @Environment(CardImportSession.self) private var importSession
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @State private var isFavorite = false
+    @Query private var cards: [BusinessCard]
+    @State private var demoIsFavorite = false
+    @State private var showsDeleteConfirmation = false
+    @State private var operationError: String?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -39,6 +44,26 @@ struct CardDetailView: View {
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .screenIdentifier("screen.detail")
+        .confirmationDialog(
+            "删除这张名片？",
+            isPresented: $showsDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("删除名片", role: .destructive) {
+                deleteCard()
+            }
+            Button("取消", role: .cancel) {}
+        } message: {
+            Text("名片信息和本地原图都会被删除，此操作无法撤销。")
+        }
+        .alert("操作失败", isPresented: Binding(
+            get: { operationError != nil },
+            set: { if !$0 { operationError = nil } }
+        )) {
+            Button("知道了", role: .cancel) {}
+        } message: {
+            Text(operationError ?? "请稍后重试。")
+        }
     }
 
     private var detailHeader: some View {
@@ -55,9 +80,7 @@ struct CardDetailView: View {
             Text("名片详情")
                 .font(.title3.weight(.semibold))
             Spacer()
-            Button {
-                isFavorite.toggle()
-            } label: {
+            Button(action: toggleFavorite) {
                 Image(systemName: isFavorite ? "star.fill" : "star")
                     .font(.title3)
                     .foregroundStyle(isFavorite ? .yellow : .white)
@@ -66,13 +89,17 @@ struct CardDetailView: View {
             .accessibilityLabel(isFavorite ? "取消收藏" : "收藏")
             .accessibilityIdentifier("core.detail.favorite")
             Button {
-                placeholder("moreMenu", "更多操作", "ellipsis")
+                if storedCard != nil {
+                    showsDeleteConfirmation = true
+                } else {
+                    placeholder("moreMenu", "更多操作", "ellipsis")
+                }
             } label: {
                 Image(systemName: "ellipsis")
                     .font(.title3)
                     .frame(width: 44, height: 44)
             }
-            .accessibilityIdentifier("placeholder.detail.moreMenu")
+            .accessibilityIdentifier(storedCard == nil ? "placeholder.detail.moreMenu" : "core.detail.moreMenu")
         }
         .foregroundStyle(.white)
         .padding(.horizontal, 4)
@@ -84,9 +111,9 @@ struct CardDetailView: View {
             HStack(alignment: .top, spacing: 14) {
                 DemoAvatar(initials: initials, size: 68, color: .purple)
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(display(importSession.draft.name, fallback: "未填写姓名"))
+                    Text(display(currentDraft.name, fallback: "未填写姓名"))
                         .font(.title2.weight(.semibold))
-                    Text(display(importSession.draft.jobTitle, fallback: "未填写职位"))
+                    Text(display(currentDraft.jobTitle, fallback: "未填写职位"))
                         .font(.body)
                         .foregroundStyle(AppColors.textSecondary)
                 }
@@ -100,8 +127,8 @@ struct CardDetailView: View {
             }
 
             VStack(alignment: .leading, spacing: 10) {
-                Label(display(importSession.draft.mobilePhone, fallback: "未填写电话"), systemImage: "phone.fill")
-                Label(display(importSession.draft.address, fallback: "未填写地址"), systemImage: "mappin.and.ellipse")
+                Label(display(currentDraft.mobilePhone, fallback: "未填写电话"), systemImage: "phone.fill")
+                Label(display(currentDraft.address, fallback: "未填写地址"), systemImage: "mappin.and.ellipse")
                     .lineLimit(2)
             }
             .font(.subheadline)
@@ -114,9 +141,12 @@ struct CardDetailView: View {
         HStack(spacing: 0) {
             quickButton("电话", "phone.fill", .blue, "call")
             quickButton("地址", "mappin", .orange, "address")
-            quickButton("备注", "note.text", .green, "note")
+            FeatureIconButton(title: "备注", symbol: "note.text", color: .green) {
+                beginEditing()
+            }
+            .accessibilityIdentifier("core.detail.note")
             FeatureIconButton(title: "编辑", symbol: "pencil", color: .teal) {
-                navigation.push(.review)
+                beginEditing()
             }
             .accessibilityIdentifier("core.detail.edit")
         }
@@ -135,7 +165,24 @@ struct CardDetailView: View {
         VStack(spacing: 0) {
             metadataButton("未分组", "person.2.fill", "group")
             Divider().padding(.leading, 48)
-            metadataButton("备注：2026-10-29 其他方式保存", "note.text", "noteMetadata")
+            Button(action: beginEditing) {
+                HStack(spacing: 16) {
+                    Image(systemName: "note.text")
+                        .foregroundStyle(.secondary)
+                        .frame(width: 28)
+                    Text(currentDraft.notes.isEmpty ? "备注：未填写" : "备注：\(currentDraft.notes)")
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.textPrimary)
+                        .lineLimit(2)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(16)
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("core.detail.noteMetadata")
         }
         .background(.white)
     }
@@ -164,11 +211,11 @@ struct CardDetailView: View {
 
     private var contactSection: some View {
         VStack(spacing: 0) {
-            contactRow(display(importSession.draft.mobilePhone, fallback: "未填写电话"), "phone.fill", trailingSymbol: "message.fill", id: "phone")
+            contactRow(display(currentDraft.mobilePhone, fallback: "未填写电话"), "phone.fill", trailingSymbol: "message.fill", id: "phone")
             Divider().padding(.leading, 52)
-            contactRow(display(importSession.draft.email, fallback: "未填写邮箱"), "envelope.fill", id: "email")
+            contactRow(display(currentDraft.email, fallback: "未填写邮箱"), "envelope.fill", id: "email")
             Divider().padding(.leading, 52)
-            contactRow(display(importSession.draft.address, fallback: "未填写地址"), "mappin.and.ellipse", id: "addressField")
+            contactRow(display(currentDraft.address, fallback: "未填写地址"), "mappin.and.ellipse", id: "addressField")
             Divider().padding(.leading, 52)
             Button {
                 placeholder("moreFields", "更多字段", "chevron.down")
@@ -260,11 +307,64 @@ struct CardDetailView: View {
     }
 
     private var initials: String {
-        importSession.draft.name.first.map(String.init) ?? "名"
+        currentDraft.name.first.map(String.init) ?? "名"
+    }
+
+    private var storedCard: BusinessCard? {
+        cards.first(where: { $0.id == cardID })
+    }
+
+    private var currentDraft: BusinessCardDraft {
+        storedCard?.draft ?? .fixture
+    }
+
+    private var isFavorite: Bool {
+        storedCard?.isFavorite ?? demoIsFavorite
     }
 
     private func display(_ value: String, fallback: String) -> String {
         value.isEmpty ? fallback : value
+    }
+
+    private func beginEditing() {
+        guard let card = storedCard else {
+            importSession.loadFixture()
+            navigation.push(.review)
+            return
+        }
+
+        do {
+            let imageData = try CardImageStore.live.load(relativePath: card.originalImagePath)
+            importSession.prepareForEditing(card, imageData: imageData)
+            navigation.push(.review)
+        } catch {
+            operationError = "无法读取原图，名片字段仍然安全保留。请释放存储空间后重试。"
+        }
+    }
+
+    private func toggleFavorite() {
+        guard let card = storedCard else {
+            demoIsFavorite.toggle()
+            return
+        }
+        card.isFavorite.toggle()
+        card.updatedAt = .now
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            operationError = "无法保存收藏状态，请稍后重试。"
+        }
+    }
+
+    private func deleteCard() {
+        guard let card = storedCard else { return }
+        do {
+            try BusinessCardPersistence.delete(card, in: modelContext)
+            navigation.returnToCards()
+        } catch {
+            operationError = "删除未完成，请检查设备存储后重试。"
+        }
     }
 }
 
@@ -274,4 +374,5 @@ struct CardDetailView: View {
     }
     .environment(AppNavigationModel(initialStage: .main))
     .environment(CardImportSession())
+    .modelContainer(for: BusinessCard.self, inMemory: true)
 }

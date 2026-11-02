@@ -27,6 +27,8 @@ final class CardImportSession {
     private(set) var imageData: Data?
     private(set) var state: CardImportState = .idle
     private(set) var isManualEntry = false
+    private(set) var editingCardID: UUID?
+    private(set) var savedCardID: UUID?
 
     init(draft: BusinessCardDraft = .fixture, imageData: Data? = nil) {
         self.draft = draft
@@ -40,6 +42,8 @@ final class CardImportSession {
     func beginNewImport() {
         state = .idle
         isManualEntry = false
+        editingCardID = nil
+        savedCardID = nil
     }
 
     func importPhoto(_ item: PhotosPickerItem?) async -> CardImportOutcome {
@@ -91,6 +95,23 @@ final class CardImportSession {
         imageData = UIImage(named: FixtureCatalog.syntheticBusinessCard.assetName)?.pngData()
         state = .ready
         isManualEntry = false
+        editingCardID = nil
+        savedCardID = nil
+    }
+
+    func prepareForEditing(_ card: BusinessCard, imageData: Data?) {
+        draft = card.draft
+        self.imageData = imageData
+        state = .ready
+        isManualEntry = false
+        editingCardID = card.id
+        savedCardID = nil
+    }
+
+    func markSaved(cardID: UUID) {
+        editingCardID = cardID
+        savedCardID = cardID
+        state = .ready
     }
 
     private func fail(

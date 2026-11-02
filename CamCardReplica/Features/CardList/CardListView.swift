@@ -1,15 +1,16 @@
 import SwiftUI
+import SwiftData
 
 struct CardListView: View {
     @Environment(AppNavigationModel.self) private var navigation
+    @Query(sort: \BusinessCard.updatedAt, order: .reverse) private var cards: [BusinessCard]
     @State private var showsAssistantInvite = true
+    @State private var searchText = ""
 
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 16) {
-                SearchHeader(source: "cards") {
-                    navigation.push(.capture)
-                }
+                searchHeader
 
                 quickActions
 
@@ -25,6 +26,55 @@ struct CardListView: View {
         }
         .background(AppColors.pageBackground)
         .screenIdentifier("screen.cards")
+    }
+
+    private var searchHeader: some View {
+        HStack(spacing: 12) {
+            Button {
+                placeholder("messages", "消息中心", symbol: "message.fill")
+            } label: {
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: "message")
+                        .font(.title2)
+                        .foregroundStyle(AppColors.textPrimary)
+                    Circle()
+                        .fill(.red)
+                        .frame(width: 9, height: 9)
+                }
+            }
+            .accessibilityIdentifier("placeholder.cards.messages")
+
+            HStack(spacing: 8) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+                TextField("姓名/公司/职位/电话/邮箱", text: $searchText)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .accessibilityIdentifier("core.cards.search")
+                if !searchText.isEmpty {
+                    Button {
+                        searchText = ""
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.tertiary)
+                    }
+                    .accessibilityLabel("清空搜索")
+                    .accessibilityIdentifier("core.cards.clearSearch")
+                }
+            }
+            .padding(.horizontal, 14)
+            .frame(height: 44)
+            .background(.white, in: Capsule())
+
+            Button {
+                navigation.push(.capture)
+            } label: {
+                Image(systemName: "plus.circle")
+                    .font(.system(size: 31))
+                    .foregroundStyle(AppColors.textPrimary)
+            }
+            .accessibilityIdentifier("core.cards.add")
+        }
     }
 
     private var quickActions: some View {
@@ -153,6 +203,26 @@ struct CardListView: View {
             .buttonStyle(.plain)
             .accessibilityIdentifier("placeholder.cards.updates")
 
+            if cards.isEmpty {
+                emptyCardsView
+            } else if filteredCards.isEmpty {
+                VStack(spacing: 7) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.title2)
+                        .foregroundStyle(.secondary)
+                    Text("没有匹配“\(searchText)”的名片")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 18)
+                .accessibilityIdentifier("core.cards.noSearchResults")
+            } else {
+                ForEach(filteredCards) { card in
+                    savedCardRow(card)
+                }
+            }
+
             Button {
                 navigation.push(.cardDetail(FixtureCatalog.demoID))
             } label: {
@@ -182,23 +252,61 @@ struct CardListView: View {
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("core.cards.demoDetail")
-
-            VStack(spacing: 7) {
-                Image(systemName: "tray")
-                    .font(.title2)
-                    .foregroundStyle(.secondary)
-                Text("真实保存的名片将显示在这里")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text("图片导入、OCR 与持久化将在后续阶段接入")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 18)
         }
         .padding(18)
         .background(.white, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+    }
+
+    private var filteredCards: [BusinessCard] {
+        cards.filter { $0.matches(searchText) }
+    }
+
+    private var emptyCardsView: some View {
+        VStack(spacing: 7) {
+            Image(systemName: "tray")
+                .font(.title2)
+                .foregroundStyle(.secondary)
+            Text("还没有保存的名片")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text("点击右上角添加，从相册导入并识别")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 18)
+        .accessibilityIdentifier("core.cards.empty")
+    }
+
+    private func savedCardRow(_ card: BusinessCard) -> some View {
+        Button {
+            navigation.push(.cardDetail(card.id))
+        } label: {
+            HStack(spacing: 14) {
+                StoredCardImage(relativePath: card.originalImagePath)
+                    .frame(width: 102, height: 76)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(card.name.isEmpty ? "未填写姓名" : card.name)
+                        .font(.headline)
+                        .foregroundStyle(AppColors.textPrimary)
+                    Text([card.company, card.jobTitle].filter { !$0.isEmpty }.joined(separator: " · "))
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.textSecondary)
+                        .lineLimit(1)
+                    Text(card.mobilePhone.isEmpty ? card.email : card.mobilePhone)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(.vertical, 5)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("core.cards.savedCard.\(card.id.uuidString)")
     }
 
     private func placeholder(_ id: String, _ title: String, symbol: String) {
@@ -209,4 +317,5 @@ struct CardListView: View {
 #Preview {
     CardListView()
         .environment(AppNavigationModel(initialStage: .main))
+        .modelContainer(for: BusinessCard.self, inMemory: true)
 }

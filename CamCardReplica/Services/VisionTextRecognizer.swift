@@ -8,7 +8,7 @@ struct RecognizedTextLine: Equatable, Sendable {
 }
 
 enum RecognizedTextReadingOrder {
-    static func sorted(_ lines: [RecognizedTextLine]) -> [RecognizedTextLine] {
+    nonisolated static func sorted(_ lines: [RecognizedTextLine]) -> [RecognizedTextLine] {
         lines.sorted { lhs, rhs in
             let verticalDistance = abs(lhs.boundingBox.midY - rhs.boundingBox.midY)
             if verticalDistance > 0.025 {

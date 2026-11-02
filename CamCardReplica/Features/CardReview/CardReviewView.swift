@@ -1,11 +1,15 @@
 import SwiftUI
+import SwiftData
 import UIKit
 
 struct CardReviewView: View {
     @Environment(AppNavigationModel.self) private var navigation
     @Environment(CardImportSession.self) private var importSession
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @State private var usesPrecision = false
+    @State private var isSaving = false
+    @State private var saveError: String?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -56,6 +60,25 @@ struct CardReviewView: View {
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .screenIdentifier("screen.review")
+        .overlay {
+            if isSaving {
+                ZStack {
+                    Color.black.opacity(0.18).ignoresSafeArea()
+                    ProgressView("正在保存名片…")
+                        .padding(22)
+                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))
+                }
+                .accessibilityIdentifier("core.review.saving")
+            }
+        }
+        .alert("保存失败", isPresented: Binding(
+            get: { saveError != nil },
+            set: { if !$0 { saveError = nil } }
+        )) {
+            Button("继续修改", role: .cancel) {}
+        } message: {
+            Text(saveError ?? "请检查设备存储空间后重试。")
+        }
     }
 
     private var reviewHeader: some View {
@@ -74,11 +97,11 @@ struct CardReviewView: View {
                 .font(.title3.weight(.semibold))
             Spacer()
             Button("保存") {
-                navigation.captureState = .saving
-                navigation.push(.saveResult)
+                saveDraft()
             }
             .font(.headline)
             .foregroundStyle(AppColors.primary)
+            .disabled(isSaving)
             .accessibilityIdentifier("core.review.save")
         }
         .padding(.horizontal, 8)
@@ -232,6 +255,7 @@ struct CardReviewView: View {
 
             TextField("点击填写", text: text)
                 .textInputAutocapitalization(.never)
+                .accessibilityIdentifier("core.review.field.\(type)")
 
             Button {
                 text.wrappedValue = ""
@@ -267,6 +291,28 @@ struct CardReviewView: View {
             get: { importSession.draft[keyPath: keyPath] },
             set: { importSession.draft[keyPath: keyPath] = $0 }
         )
+    }
+
+    private func saveDraft() {
+        guard !isSaving else { return }
+        isSaving = true
+        navigation.captureState = .saving
+
+        do {
+            let card = try BusinessCardPersistence.save(
+                draft: importSession.draft,
+                imageData: importSession.imageData,
+                editingCardID: importSession.editingCardID,
+                in: modelContext
+            )
+            importSession.markSaved(cardID: card.id)
+            isSaving = false
+            navigation.push(.saveResult)
+        } catch {
+            isSaving = false
+            navigation.captureState = .failed(message: error.localizedDescription)
+            saveError = error.localizedDescription
+        }
     }
 }
 
@@ -318,4 +364,5 @@ private struct ReviewFieldSection<Content: View>: View {
     }
     .environment(AppNavigationModel(initialStage: .main))
     .environment(CardImportSession())
+    .modelContainer(for: BusinessCard.self, inMemory: true)
 }

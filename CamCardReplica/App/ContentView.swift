@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
     @State private var navigation: AppNavigationModel
@@ -65,4 +66,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .preferredColorScheme(.light)
+        .modelContainer(for: BusinessCard.self, inMemory: true)
 }

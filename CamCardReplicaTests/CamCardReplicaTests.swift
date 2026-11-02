@@ -1,4 +1,5 @@
 import XCTest
+import SwiftData
 import UIKit
 @testable import CamCardReplica
 
@@ -169,6 +170,110 @@ final class CamCardReplicaTests: XCTestCase {
         XCTAssertEqual(session.state, .idle)
     }
 
+    func testImageStoreSavesLoadsAndDeletesOnlyRelativeCardPaths() throws {
+        let directory = temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let store = CardImageStore(baseDirectory: directory)
+        let imageData = makeTextImage(lines: ["IMAGE"])
+
+        let relativePath = try store.save(imageData, for: UUID())
+
+        XCTAssertTrue(relativePath.hasPrefix("CardImages/"))
+        XCTAssertEqual(try store.load(relativePath: relativePath), imageData)
+        XCTAssertThrowsError(try store.load(relativePath: "../outside.png"))
+
+        try store.delete(relativePath: relativePath)
+        XCTAssertNil(try store.load(relativePath: relativePath))
+    }
+
+    func testPersistenceCreatesUpdatesSearchesAndDeletesCardWithImage() throws {
+        let directory = temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let imageStore = CardImageStore(baseDirectory: directory)
+        let container = try ModelContainer(
+            for: BusinessCard.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+        let context = ModelContext(container)
+        let imageData = makeTextImage(lines: ["PERSISTED CARD"])
+        let created = try BusinessCardPersistence.save(
+            draft: .fixture,
+            imageData: imageData,
+            editingCardID: nil,
+            in: context,
+            imageStore: imageStore,
+            now: Date(timeIntervalSince1970: 100)
+        )
+
+        XCTAssertEqual(try context.fetch(FetchDescriptor<BusinessCard>()).count, 1)
+        XCTAssertEqual(try imageStore.load(relativePath: created.originalImagePath), imageData)
+        XCTAssertTrue(created.matches("远山"))
+        XCTAssertTrue(created.matches("demo@example"))
+        XCTAssertFalse(created.matches("不存在的字段"))
+
+        var editedDraft = created.draft
+        editedDraft.name = "已编辑姓名"
+        editedDraft.notes = "课程作业备注"
+        let updated = try BusinessCardPersistence.save(
+            draft: editedDraft,
+            imageData: imageData,
+            editingCardID: created.id,
+            in: context,
+            imageStore: imageStore,
+            now: Date(timeIntervalSince1970: 200)
+        )
+
+        XCTAssertEqual(try context.fetch(FetchDescriptor<BusinessCard>()).count, 1)
+        XCTAssertEqual(updated.name, "已编辑姓名")
+        XCTAssertEqual(updated.notes, "课程作业备注")
+        XCTAssertEqual(updated.updatedAt, Date(timeIntervalSince1970: 200))
+
+        let savedPath = updated.originalImagePath
+        try BusinessCardPersistence.delete(updated, in: context, imageStore: imageStore)
+
+        XCTAssertTrue(try context.fetch(FetchDescriptor<BusinessCard>()).isEmpty)
+        XCTAssertNil(try imageStore.load(relativePath: savedPath))
+    }
+
+    func testSwiftDataRecordSurvivesContainerRecreation() throws {
+        let directory = temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let databaseURL = directory.appendingPathComponent("restart.store")
+        let schema = Schema([BusinessCard.self])
+        let configuration = ModelConfiguration(
+            "RestartTest",
+            schema: schema,
+            url: databaseURL,
+            cloudKitDatabase: .none
+        )
+        let expectedID: UUID
+
+        do {
+            let firstContainer = try ModelContainer(for: schema, configurations: configuration)
+            let firstContext = ModelContext(firstContainer)
+            let card = BusinessCard(draft: .fixture)
+            expectedID = card.id
+            firstContext.insert(card)
+            try firstContext.save()
+        }
+
+        do {
+            let secondConfiguration = ModelConfiguration(
+                "RestartTest",
+                schema: schema,
+                url: databaseURL,
+                cloudKitDatabase: .none
+            )
+            let secondContainer = try ModelContainer(for: schema, configurations: secondConfiguration)
+            let secondContext = ModelContext(secondContainer)
+            let restoredCards = try secondContext.fetch(FetchDescriptor<BusinessCard>())
+
+            XCTAssertEqual(restoredCards.count, 1)
+            XCTAssertEqual(restoredCards.first?.id, expectedID)
+            XCTAssertEqual(restoredCards.first?.email, FixtureCatalog.syntheticBusinessCard.email)
+        }
+    }
+
     private func makeTextImage(lines: [String], fontName: String = "HelveticaNeue-Bold") -> Data {
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: 1400, height: 800))
         return renderer.pngData { context in
@@ -187,5 +292,10 @@ final class CamCardReplicaTests: XCTestCase {
                 )
             }
         }
+    }
+
+    private func temporaryDirectory() -> URL {
+        FileManager.default.temporaryDirectory
+            .appendingPathComponent("CamCardReplicaTests-\(UUID().uuidString)", isDirectory: true)
     }
 }

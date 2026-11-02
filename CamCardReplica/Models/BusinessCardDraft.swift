@@ -12,7 +12,7 @@ struct BusinessCardDraft: Equatable, Sendable {
     var address: String
     var notes: String
 
-    static let empty = BusinessCardDraft(
+    nonisolated static let empty = BusinessCardDraft(
         ocrRawText: "",
         name: "",
         company: "",
@@ -25,7 +25,7 @@ struct BusinessCardDraft: Equatable, Sendable {
         notes: ""
     )
 
-    static var fixture: BusinessCardDraft {
+    nonisolated static var fixture: BusinessCardDraft {
         let fixture = FixtureCatalog.syntheticBusinessCard
         return BusinessCardDraft(
             ocrRawText: fixture.rawText,

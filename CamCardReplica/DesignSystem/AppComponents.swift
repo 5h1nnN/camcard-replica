@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct DemoAvatar: View {
     let initials: String
@@ -54,7 +55,7 @@ struct SearchHeader: View {
                 navigation.showPlaceholder(
                     id: "\(source).search",
                     title: "搜索",
-                    message: source == "cards" ? "真实名片搜索将在阶段 3 接入。" : "可前往名片夹搜索已保存名片；演示首页搜索暂未开放。",
+                    message: source == "cards" ? "请使用名片夹顶部搜索框查找已保存名片。" : "可前往名片夹搜索已保存名片；演示首页搜索暂未开放。",
                     source: source,
                     symbol: "magnifyingglass"
                 )
@@ -117,6 +118,44 @@ struct DemoBusinessCardImage: View {
             .scaledToFit()
             .clipShape(RoundedRectangle(cornerRadius: compact ? 6 : 12, style: .continuous))
             .accessibilityLabel("合成演示名片")
+    }
+}
+
+struct StoredCardImage: View {
+    let relativePath: String?
+    var cornerRadius: CGFloat = 10
+    @State private var image: UIImage?
+
+    var body: some View {
+        Group {
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                LinearGradient(
+                    colors: [AppColors.primary.opacity(0.08), AppColors.primary.opacity(0.2)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .overlay {
+                    Image(systemName: "person.text.rectangle.fill")
+                        .font(.title2)
+                        .foregroundStyle(AppColors.primary)
+                }
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+        .clipped()
+        .task(id: relativePath) {
+            let path = relativePath
+            let store = CardImageStore.live
+            let data = await Task.detached(priority: .utility) {
+                try? store.load(relativePath: path)
+            }.value
+            image = data.flatMap(UIImage.init(data:))
+        }
+        .accessibilityHidden(true)
     }
 }
 

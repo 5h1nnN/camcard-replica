@@ -1,7 +1,7 @@
 import Foundation
 
 enum BusinessCardFieldParser {
-    static func parse(_ rawText: String) -> BusinessCardDraft {
+    nonisolated static func parse(_ rawText: String) -> BusinessCardDraft {
         let lines = normalizedLines(in: rawText)
         guard !lines.isEmpty else { return .empty }
 
@@ -47,7 +47,7 @@ enum BusinessCardFieldParser {
         )
     }
 
-    static func normalizedLines(in rawText: String) -> [String] {
+    nonisolated static func normalizedLines(in rawText: String) -> [String] {
         var seen = Set<String>()
         return rawText
             .components(separatedBy: .newlines)
@@ -58,7 +58,7 @@ enum BusinessCardFieldParser {
             .filter { !$0.isEmpty && seen.insert($0).inserted }
     }
 
-    private static func firstMatch(
+    nonisolated private static func firstMatch(
         pattern: String,
         in text: String,
         options: NSRegularExpression.Options = []
@@ -70,7 +70,7 @@ enum BusinessCardFieldParser {
         return String(text[swiftRange])
     }
 
-    private static func isPhoneLine(_ line: String) -> Bool {
+    nonisolated private static func isPhoneLine(_ line: String) -> Bool {
         if line.range(of: "@") != nil || line.range(of: #"(?:https?://|www\.)"#, options: [.regularExpression, .caseInsensitive]) != nil {
             return false
         }
@@ -82,12 +82,12 @@ enum BusinessCardFieldParser {
         return line.range(of: #"(?<!\d)\+?[\d()\s-]{7,}(?!\d)"#, options: .regularExpression) != nil
     }
 
-    private static func isMobilePhoneLine(_ line: String) -> Bool {
+    nonisolated private static func isMobilePhoneLine(_ line: String) -> Bool {
         containsAny(line, ["手机", "移动", "mobile", "cell"]) ||
             line.range(of: #"(?:\+?86[\s-]?)?1[3-9]\d(?:[\s-]?\d){8}"#, options: .regularExpression) != nil
     }
 
-    private static func cleanPhone(_ line: String) -> String {
+    nonisolated private static func cleanPhone(_ line: String) -> String {
         guard !line.isEmpty else { return "" }
         let withoutLabel = line.replacingOccurrences(
             of: #"(?i)^\s*(?:手机|移动电话|电话|座机|mobile|cell|phone|tel|t)\s*[:：]?\s*"#,
@@ -97,39 +97,39 @@ enum BusinessCardFieldParser {
         return withoutLabel.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    private static func isCompanyLine(_ line: String) -> Bool {
+    nonisolated private static func isCompanyLine(_ line: String) -> Bool {
         containsAny(line, [
             "公司", "集团", "工作室", "事务所", "科技", "大学", "学院",
             " inc", "inc.", " llc", "ltd", "studio", "company", "corporation", "university"
         ])
     }
 
-    private static func isJobTitleLine(_ line: String) -> Bool {
+    nonisolated private static func isJobTitleLine(_ line: String) -> Bool {
         containsAny(line, [
             "经理", "总监", "设计师", "工程师", "顾问", "主管", "创始人", "教授",
             "founder", "director", "manager", "designer", "engineer", "consultant", "president", "professor", "ceo", "cto"
         ])
     }
 
-    private static func isAddressLine(_ line: String) -> Bool {
+    nonisolated private static func isAddressLine(_ line: String) -> Bool {
         containsAny(line, [
             "地址", "省", "市", "区", "县", "路", "街", "道", "号", "室",
             "address", "street", " road", " avenue", " ave", " boulevard", " blvd", "suite", "room"
         ])
     }
 
-    private static func isContactOnlyLine(_ line: String) -> Bool {
+    nonisolated private static func isContactOnlyLine(_ line: String) -> Bool {
         containsAny(line, ["邮箱", "email", "网址", "website", "电话", "手机", "mobile", "phone", "tel"])
     }
 
-    private static func isPlausibleName(_ line: String) -> Bool {
+    nonisolated private static func isPlausibleName(_ line: String) -> Bool {
         let count = line.count
         guard (2...40).contains(count) else { return false }
         guard line.filter(\.isNumber).isEmpty else { return false }
         return !isCompanyLine(line) && !isJobTitleLine(line) && !isAddressLine(line)
     }
 
-    private static func containsAny(_ text: String, _ needles: [String]) -> Bool {
+    nonisolated private static func containsAny(_ text: String, _ needles: [String]) -> Bool {
         let folded = text.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
         return needles.contains { folded.contains($0.lowercased()) }
     }

@@ -6,7 +6,7 @@ final class CamCardReplicaUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
-        app.launchArguments += ["-UITesting", "-AppleInterfaceStyle", "Light"]
+        app.launchArguments += ["-UITesting", "-ResetUITestStore", "-AppleInterfaceStyle", "Light"]
         app.launch()
     }
 
@@ -59,6 +59,59 @@ final class CamCardReplicaUITests: XCTestCase {
         XCTAssertFalse(element("placeholder.sheet").waitForExistence(timeout: 1))
     }
 
+    func testSavedCardPersistsCanBeSearchedEditedAndDeleted() {
+        login()
+        app.buttons["core.tab.capture"].tap()
+        XCTAssertTrue(element("screen.capture").waitForExistence(timeout: 3))
+        app.buttons["core.capture.shutter"].tap()
+        XCTAssertTrue(element("screen.review").waitForExistence(timeout: 3))
+        app.buttons["core.review.save"].tap()
+        XCTAssertTrue(element("screen.result").waitForExistence(timeout: 5))
+        app.buttons["core.result.returnCards"].tap()
+        XCTAssertTrue(element("screen.cards").waitForExistence(timeout: 3))
+        XCTAssertTrue(savedCardButton.waitForExistence(timeout: 3))
+
+        app.terminate()
+        app.launchArguments = ["-UITesting", "-AppleInterfaceStyle", "Light"]
+        app.launch()
+        login()
+        app.buttons["core.tab.cards"].tap()
+        XCTAssertTrue(element("screen.cards").waitForExistence(timeout: 3))
+
+        let search = app.textFields["core.cards.search"]
+        XCTAssertTrue(search.waitForExistence(timeout: 2))
+        search.tap()
+        search.typeText("demo@example.com")
+        XCTAssertTrue(savedCardButton.waitForExistence(timeout: 3))
+        savedCardButton.tap()
+        XCTAssertTrue(element("screen.detail").waitForExistence(timeout: 3))
+
+        app.buttons["core.detail.edit"].tap()
+        XCTAssertTrue(element("screen.review").waitForExistence(timeout: 3))
+        let nameField = app.textFields["core.review.field.姓名"]
+        XCTAssertTrue(nameField.waitForExistence(timeout: 2))
+        nameField.tap()
+        nameField.typeText(" 已编辑")
+        app.buttons["core.review.save"].tap()
+        XCTAssertTrue(element("screen.result").waitForExistence(timeout: 5))
+        app.buttons["core.result.returnCards"].tap()
+        XCTAssertTrue(element("screen.cards").waitForExistence(timeout: 3))
+
+        app.buttons["core.cards.clearSearch"].tap()
+        let editedSearch = app.textFields["core.cards.search"]
+        editedSearch.tap()
+        editedSearch.typeText("已编辑")
+        XCTAssertTrue(savedCardButton.waitForExistence(timeout: 3))
+        savedCardButton.tap()
+        XCTAssertTrue(element("screen.detail").waitForExistence(timeout: 3))
+
+        app.buttons["core.detail.moreMenu"].tap()
+        XCTAssertTrue(app.buttons["删除名片"].waitForExistence(timeout: 2))
+        app.buttons["删除名片"].tap()
+        XCTAssertTrue(element("screen.cards").waitForExistence(timeout: 3))
+        XCTAssertFalse(savedCardButton.exists)
+    }
+
     private func login() {
         XCTAssertTrue(element("screen.login").waitForExistence(timeout: 5))
         app.buttons["core.login.agreement"].tap()
@@ -68,5 +121,11 @@ final class CamCardReplicaUITests: XCTestCase {
 
     private func element(_ identifier: String) -> XCUIElement {
         app.descendants(matching: .any)[identifier]
+    }
+
+    private var savedCardButton: XCUIElement {
+        app.buttons.matching(
+            NSPredicate(format: "identifier BEGINSWITH 'core.cards.savedCard.'")
+        ).firstMatch
     }
 }

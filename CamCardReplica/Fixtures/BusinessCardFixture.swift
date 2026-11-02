@@ -13,9 +13,9 @@ struct BusinessCardFixture: Equatable, Sendable {
 }
 
 enum FixtureCatalog {
-    static let demoID = UUID(uuidString: "4D6C07EA-B880-426C-8C0B-53F1AD17DC06")!
+    nonisolated static let demoID = UUID(uuidString: "4D6C07EA-B880-426C-8C0B-53F1AD17DC06")!
 
-    static let syntheticBusinessCard = BusinessCardFixture(
+    nonisolated static let syntheticBusinessCard = BusinessCardFixture(
         rawText: """
         示例用户 DEMO USER
         远山创意工作室
