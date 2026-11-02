@@ -59,6 +59,35 @@ final class CamCardReplicaUITests: XCTestCase {
         XCTAssertFalse(element("placeholder.sheet").waitForExistence(timeout: 1))
     }
 
+    func testEmptySearchKeyboardAndCardsTabStateAreStable() {
+        login()
+        app.buttons["core.tab.cards"].tap()
+
+        XCTAssertTrue(element("screen.cards").waitForExistence(timeout: 3))
+        XCTAssertTrue(element("core.cards.empty").waitForExistence(timeout: 2))
+
+        let search = app.textFields["core.cards.search"]
+        search.tap()
+        search.typeText("不存在的名片")
+        XCTAssertTrue(element("core.cards.noSearchResults").waitForExistence(timeout: 2))
+        search.typeText("\n")
+        XCTAssertFalse(app.keyboards.firstMatch.waitForExistence(timeout: 1))
+
+        app.buttons["core.cards.clearSearch"].tap()
+        app.buttons["core.cards.add"].tap()
+        XCTAssertTrue(element("screen.capture").waitForExistence(timeout: 3))
+        app.buttons["core.capture.close"].tap()
+
+        XCTAssertTrue(element("screen.cards").waitForExistence(timeout: 3))
+        XCTAssertEqual(app.buttons["core.tab.cards"].value as? String, "已选中")
+
+        app.buttons["placeholder.cards.groups"].tap()
+        XCTAssertTrue(element("placeholder.sheet").waitForExistence(timeout: 2))
+        app.buttons["placeholder.close"].tap()
+        XCTAssertTrue(element("screen.cards").exists)
+        XCTAssertEqual(app.buttons["core.tab.cards"].value as? String, "已选中")
+    }
+
     func testSavedCardPersistsCanBeSearchedEditedAndDeleted() {
         login()
         app.buttons["core.tab.capture"].tap()

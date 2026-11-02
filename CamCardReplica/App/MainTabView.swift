@@ -80,6 +80,7 @@ private struct MainTabBar: View {
             .foregroundStyle(selectedTab == tab ? AppColors.primary : Color.secondary)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .accessibilityValue(selectedTab == tab ? "已选中" : "未选中")
         .accessibilityIdentifier("core.tab.\(tab.rawValue)")
     }
 }

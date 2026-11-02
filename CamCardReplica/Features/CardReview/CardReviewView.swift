@@ -7,9 +7,10 @@ struct CardReviewView: View {
     @Environment(CardImportSession.self) private var importSession
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @State private var usesPrecision = false
+    @State private var usesPrecision = true
     @State private var isSaving = false
     @State private var saveError: String?
+    @FocusState private var focusedField: String?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -57,6 +58,22 @@ struct CardReviewView: View {
             .scrollDismissesKeyboard(.interactively)
         }
         .background(AppColors.pageBackground)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if focusedField != nil {
+                HStack {
+                    Spacer()
+                    Button("完成") {
+                        focusedField = nil
+                    }
+                    .font(.headline)
+                    .accessibilityIdentifier("core.review.keyboardDone")
+                }
+                .padding(.horizontal, 16)
+                .frame(height: 44)
+                .background(.bar)
+                .overlay(alignment: .top) { Divider() }
+            }
+        }
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .screenIdentifier("screen.review")
@@ -84,6 +101,7 @@ struct CardReviewView: View {
     private var reviewHeader: some View {
         HStack {
             Button {
+                focusedField = nil
                 dismiss()
             } label: {
                 Image(systemName: "chevron.left")
@@ -255,6 +273,9 @@ struct CardReviewView: View {
 
             TextField("点击填写", text: text)
                 .textInputAutocapitalization(.never)
+                .focused($focusedField, equals: type)
+                .submitLabel(.done)
+                .onSubmit { focusedField = nil }
                 .accessibilityIdentifier("core.review.field.\(type)")
 
             Button {
@@ -295,6 +316,7 @@ struct CardReviewView: View {
 
     private func saveDraft() {
         guard !isSaving else { return }
+        focusedField = nil
         isSaving = true
         navigation.captureState = .saving
 

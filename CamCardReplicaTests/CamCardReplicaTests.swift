@@ -171,7 +171,7 @@ final class CamCardReplicaTests: XCTestCase {
     }
 
     func testImageStoreSavesLoadsAndDeletesOnlyRelativeCardPaths() throws {
-        let directory = temporaryDirectory()
+        let directory = try temporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let store = CardImageStore(baseDirectory: directory)
         let imageData = makeTextImage(lines: ["IMAGE"])
@@ -187,7 +187,7 @@ final class CamCardReplicaTests: XCTestCase {
     }
 
     func testPersistenceCreatesUpdatesSearchesAndDeletesCardWithImage() throws {
-        let directory = temporaryDirectory()
+        let directory = try temporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let imageStore = CardImageStore(baseDirectory: directory)
         let container = try ModelContainer(
@@ -236,7 +236,7 @@ final class CamCardReplicaTests: XCTestCase {
     }
 
     func testSwiftDataRecordSurvivesContainerRecreation() throws {
-        let directory = temporaryDirectory()
+        let directory = try temporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let databaseURL = directory.appendingPathComponent("restart.store")
         let schema = Schema([BusinessCard.self])
@@ -294,8 +294,10 @@ final class CamCardReplicaTests: XCTestCase {
         }
     }
 
-    private func temporaryDirectory() -> URL {
-        FileManager.default.temporaryDirectory
+    private func temporaryDirectory() throws -> URL {
+        let directory = FileManager.default.temporaryDirectory
             .appendingPathComponent("CamCardReplicaTests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        return directory
     }
 }

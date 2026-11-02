@@ -6,6 +6,7 @@ struct CardListView: View {
     @Query(sort: \BusinessCard.updatedAt, order: .reverse) private var cards: [BusinessCard]
     @State private var showsAssistantInvite = true
     @State private var searchText = ""
+    @FocusState private var searchIsFocused: Bool
 
     var body: some View {
         ScrollView {
@@ -24,6 +25,7 @@ struct CardListView: View {
             .padding(.top, 10)
             .padding(.bottom, 20)
         }
+        .scrollDismissesKeyboard(.interactively)
         .background(AppColors.pageBackground)
         .screenIdentifier("screen.cards")
     }
@@ -50,6 +52,9 @@ struct CardListView: View {
                 TextField("姓名/公司/职位/电话/邮箱", text: $searchText)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
+                    .focused($searchIsFocused)
+                    .submitLabel(.search)
+                    .onSubmit { searchIsFocused = false }
                     .accessibilityIdentifier("core.cards.search")
                 if !searchText.isEmpty {
                     Button {
@@ -67,6 +72,7 @@ struct CardListView: View {
             .background(.white, in: Capsule())
 
             Button {
+                searchIsFocused = false
                 navigation.push(.capture)
             } label: {
                 Image(systemName: "plus.circle")
@@ -203,9 +209,7 @@ struct CardListView: View {
             .buttonStyle(.plain)
             .accessibilityIdentifier("placeholder.cards.updates")
 
-            if cards.isEmpty {
-                emptyCardsView
-            } else if filteredCards.isEmpty {
+            if !searchText.isEmpty && filteredCards.isEmpty {
                 VStack(spacing: 7) {
                     Image(systemName: "magnifyingglass")
                         .font(.title2)
@@ -217,6 +221,8 @@ struct CardListView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 18)
                 .accessibilityIdentifier("core.cards.noSearchResults")
+            } else if cards.isEmpty {
+                emptyCardsView
             } else {
                 ForEach(filteredCards) { card in
                     savedCardRow(card)
@@ -224,6 +230,7 @@ struct CardListView: View {
             }
 
             Button {
+                searchIsFocused = false
                 navigation.push(.cardDetail(FixtureCatalog.demoID))
             } label: {
                 HStack(spacing: 14) {
@@ -280,6 +287,7 @@ struct CardListView: View {
 
     private func savedCardRow(_ card: BusinessCard) -> some View {
         Button {
+            searchIsFocused = false
             navigation.push(.cardDetail(card.id))
         } label: {
             HStack(spacing: 14) {
@@ -289,6 +297,7 @@ struct CardListView: View {
                     Text(card.name.isEmpty ? "未填写姓名" : card.name)
                         .font(.headline)
                         .foregroundStyle(AppColors.textPrimary)
+                        .lineLimit(2)
                     Text([card.company, card.jobTitle].filter { !$0.isEmpty }.joined(separator: " · "))
                         .font(.subheadline)
                         .foregroundStyle(AppColors.textSecondary)

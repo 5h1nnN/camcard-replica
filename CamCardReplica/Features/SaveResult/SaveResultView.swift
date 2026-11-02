@@ -4,6 +4,7 @@ import SwiftData
 struct SaveResultView: View {
     @Environment(AppNavigationModel.self) private var navigation
     @Environment(CardImportSession.self) private var importSession
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Query(sort: \BusinessCard.updatedAt, order: .reverse) private var cards: [BusinessCard]
 
     var body: some View {
@@ -33,32 +34,49 @@ struct SaveResultView: View {
     }
 
     private var successHeader: some View {
-        ZStack(alignment: .topTrailing) {
+        ZStack(alignment: .top) {
             LinearGradient(
                 colors: [AppColors.primaryStrong, AppColors.primary],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
-            .frame(height: 210)
+            .frame(height: dynamicTypeSize.isAccessibilitySize ? 250 : 210)
 
-            HStack(spacing: 10) {
-                Image(systemName: "checkmark.circle.fill")
-                Text("名片保存成功")
-                    .font(.title2.weight(.medium))
+            Group {
+                if dynamicTypeSize.isAccessibilitySize {
+                    VStack(spacing: 18) {
+                        Label("名片保存成功", systemImage: "checkmark.circle.fill")
+                            .font(.title2.weight(.medium))
+                            .multilineTextAlignment(.center)
+                        doneButton
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 42)
+                } else {
+                    HStack(spacing: 10) {
+                        Image(systemName: "checkmark.circle.fill")
+                        Text("名片保存成功")
+                            .font(.title2.weight(.medium))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .overlay(alignment: .trailing) {
+                        doneButton
+                            .padding(.trailing, 20)
+                    }
+                    .padding(.top, 38)
+                }
             }
             .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .padding(.top, 38)
-
-            Button("完成") {
-                navigation.returnToCards()
-            }
-            .font(.headline)
-            .foregroundStyle(.white)
-            .padding(.top, 42)
-            .padding(.trailing, 20)
-            .accessibilityIdentifier("core.result.done")
         }
+    }
+
+    private var doneButton: some View {
+        Button("完成") {
+            navigation.returnToCards()
+        }
+        .font(.headline)
+        .foregroundStyle(.white)
+        .accessibilityIdentifier("core.result.done")
     }
 
     private var summaryCard: some View {
@@ -84,9 +102,11 @@ struct SaveResultView: View {
                         Text(summaryDraft.name.isEmpty ? "未填写姓名" : summaryDraft.name)
                             .font(.title2)
                             .foregroundStyle(AppColors.textPrimary)
+                            .lineLimit(2)
                         Text(summaryDraft.jobTitle.isEmpty ? "未填写职位" : summaryDraft.jobTitle)
                             .font(.body)
                             .foregroundStyle(AppColors.textSecondary)
+                            .lineLimit(2)
                     }
                     Spacer()
                     Image(systemName: "chevron.right")
@@ -98,14 +118,25 @@ struct SaveResultView: View {
 
             Divider()
 
-            HStack(spacing: 0) {
-                actionButton("分组", "person.2.fill", "group")
-                actionButton("备注", "note.text", "note")
-                actionButton("提醒", "alarm.fill", "reminder")
-                actionButton("存入通讯录", "person.crop.rectangle.fill", "contacts")
+            if dynamicTypeSize.isAccessibilitySize {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 18) {
+                    resultActionButtons
+                }
+            } else {
+                HStack(spacing: 0) {
+                    resultActionButtons
+                }
             }
         }
         .appCard(padding: 16)
+    }
+
+    @ViewBuilder
+    private var resultActionButtons: some View {
+        actionButton("分组", "person.2.fill", "group")
+        actionButton("备注", "note.text", "note")
+        actionButton("提醒", "alarm.fill", "reminder")
+        actionButton("存入通讯录", "person.crop.rectangle.fill", "contacts")
     }
 
     private func actionButton(_ title: String, _ symbol: String, _ id: String) -> some View {
@@ -126,29 +157,45 @@ struct SaveResultView: View {
     }
 
     private var bottomActions: some View {
-        HStack(spacing: 12) {
-            Button {
-                navigation.path = [.capture]
-            } label: {
-                Label("拍下一张", systemImage: "camera.fill")
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(spacing: 8) {
+                    nextCardButton
+                    returnToCardsButton
+                }
+            } else {
+                HStack(spacing: 12) {
+                    nextCardButton
+                    returnToCardsButton
+                }
             }
-            .buttonStyle(.bordered)
-            .tint(AppColors.primary)
-            .accessibilityIdentifier("core.result.next")
-
-            Button {
-                navigation.returnToCards()
-            } label: {
-                Label("返回名片夹", systemImage: "paperplane.fill")
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(AppColors.primary)
-            .accessibilityIdentifier("core.result.returnCards")
         }
+    }
+
+    private var nextCardButton: some View {
+        Button {
+            navigation.path = [.capture]
+        } label: {
+            Label("拍下一张", systemImage: "camera.fill")
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+        }
+        .buttonStyle(.bordered)
+        .tint(AppColors.primary)
+        .accessibilityIdentifier("core.result.next")
+    }
+
+    private var returnToCardsButton: some View {
+        Button {
+            navigation.returnToCards()
+        } label: {
+            Label("返回名片夹", systemImage: "paperplane.fill")
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(AppColors.primary)
+        .accessibilityIdentifier("core.result.returnCards")
     }
 
     private var summaryDraft: BusinessCardDraft {
@@ -166,5 +213,15 @@ struct SaveResultView: View {
     }
     .environment(AppNavigationModel(initialStage: .main))
     .environment(CardImportSession())
+    .modelContainer(for: BusinessCard.self, inMemory: true)
+}
+
+#Preview("超大动态字体") {
+    NavigationStack {
+        SaveResultView()
+    }
+    .environment(AppNavigationModel(initialStage: .main))
+    .environment(CardImportSession())
+    .environment(\.dynamicTypeSize, .accessibility2)
     .modelContainer(for: BusinessCard.self, inMemory: true)
 }

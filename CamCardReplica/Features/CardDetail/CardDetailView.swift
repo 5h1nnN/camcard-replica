@@ -7,6 +7,7 @@ struct CardDetailView: View {
     @Environment(CardImportSession.self) private var importSession
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Query private var cards: [BusinessCard]
     @State private var demoIsFavorite = false
     @State private var showsDeleteConfirmation = false
@@ -16,7 +17,7 @@ struct CardDetailView: View {
         VStack(spacing: 0) {
             ZStack(alignment: .top) {
                 AppColors.primaryDark
-                    .frame(height: 214)
+                    .frame(height: detailHeroHeight)
                 VStack(spacing: 0) {
                     detailHeader
                     identityCard
@@ -108,23 +109,7 @@ struct CardDetailView: View {
 
     private var identityCard: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack(alignment: .top, spacing: 14) {
-                DemoAvatar(initials: initials, size: 68, color: .purple)
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(display(currentDraft.name, fallback: "未填写姓名"))
-                        .font(.title2.weight(.semibold))
-                    Text(display(currentDraft.jobTitle, fallback: "未填写职位"))
-                        .font(.body)
-                        .foregroundStyle(AppColors.textSecondary)
-                }
-                Spacer()
-                Label("识别完成", systemImage: "checkmark.circle.fill")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(AppColors.success)
-                    .padding(.horizontal, 9)
-                    .padding(.vertical, 6)
-                    .background(AppColors.success.opacity(0.1), in: Capsule())
-            }
+            identityHeader
 
             VStack(alignment: .leading, spacing: 10) {
                 Label(display(currentDraft.mobilePhone, fallback: "未填写电话"), systemImage: "phone.fill")
@@ -135,6 +120,47 @@ struct CardDetailView: View {
             .foregroundStyle(AppColors.textSecondary)
         }
         .appCard(padding: 16)
+    }
+
+    @ViewBuilder
+    private var identityHeader: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .top, spacing: 14) {
+                    DemoAvatar(initials: initials, size: 68, color: .purple)
+                    identityText
+                }
+                recognitionBadge
+            }
+        } else {
+            HStack(alignment: .top, spacing: 14) {
+                DemoAvatar(initials: initials, size: 68, color: .purple)
+                identityText
+                Spacer()
+                recognitionBadge
+            }
+        }
+    }
+
+    private var identityText: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(display(currentDraft.name, fallback: "未填写姓名"))
+                .font(.title2.weight(.semibold))
+                .lineLimit(2)
+            Text(display(currentDraft.jobTitle, fallback: "未填写职位"))
+                .font(.body)
+                .foregroundStyle(AppColors.textSecondary)
+                .lineLimit(2)
+        }
+    }
+
+    private var recognitionBadge: some View {
+        Label("识别完成", systemImage: "checkmark.circle.fill")
+            .font(.caption.weight(.medium))
+            .foregroundStyle(AppColors.success)
+            .padding(.horizontal, 9)
+            .padding(.vertical, 6)
+            .background(AppColors.success.opacity(0.1), in: Capsule())
     }
 
     private var quickActions: some View {
@@ -244,6 +270,8 @@ struct CardDetailView: View {
                     .font(.subheadline)
                     .foregroundStyle(AppColors.textPrimary)
                     .multilineTextAlignment(.leading)
+                    .lineLimit(3)
+                    .fixedSize(horizontal: false, vertical: true)
                 Spacer()
                 if let trailingSymbol {
                     Image(systemName: trailingSymbol)
@@ -257,10 +285,32 @@ struct CardDetailView: View {
     }
 
     private var bottomActions: some View {
-        HStack(spacing: 8) {
-            Button {
-                placeholder("contacts", "存入通讯录", "person.crop.rectangle")
-            } label: {
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(spacing: 8) {
+                    contactsButton
+                    exchangeButton
+                    shareButton
+                }
+            } else {
+                HStack(spacing: 8) {
+                    contactsButton
+                    exchangeButton
+                    shareButton
+                }
+            }
+        }
+    }
+
+    private var contactsButton: some View {
+        Button {
+            placeholder("contacts", "存入通讯录", "person.crop.rectangle")
+        } label: {
+            if dynamicTypeSize.isAccessibilitySize {
+                Label("存入通讯录", systemImage: "person.crop.rectangle")
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+            } else {
                 VStack(spacing: 3) {
                     Image(systemName: "person.crop.rectangle")
                     Text("存入通讯录")
@@ -268,32 +318,40 @@ struct CardDetailView: View {
                 }
                 .frame(width: 74, height: 50)
             }
-            .buttonStyle(.plain)
-            .foregroundStyle(AppColors.primary)
-            .accessibilityIdentifier("placeholder.detail.contacts")
-
-            Button {
-                placeholder("exchange", "向对方递名片", "rectangle.on.rectangle.angled")
-            } label: {
-                Text("向对方递名片")
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 46)
-            }
-            .buttonStyle(.bordered)
-            .tint(AppColors.primary)
-            .accessibilityIdentifier("placeholder.detail.exchange")
-
-            Button {
-                placeholder("share", "分享名片", "bubble.left.and.bubble.right.fill")
-            } label: {
-                Label("分享名片", systemImage: "bubble.left.and.bubble.right.fill")
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 46)
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(.green)
-            .accessibilityIdentifier("placeholder.detail.share")
         }
+        .buttonStyle(.plain)
+        .foregroundStyle(AppColors.primary)
+        .accessibilityIdentifier("placeholder.detail.contacts")
+    }
+
+    private var exchangeButton: some View {
+        Button {
+            placeholder("exchange", "向对方递名片", "rectangle.on.rectangle.angled")
+        } label: {
+            Text("向对方递名片")
+                .frame(maxWidth: .infinity)
+                .frame(height: 46)
+        }
+        .buttonStyle(.bordered)
+        .tint(AppColors.primary)
+        .accessibilityIdentifier("placeholder.detail.exchange")
+    }
+
+    private var shareButton: some View {
+        Button {
+            placeholder("share", "分享名片", "bubble.left.and.bubble.right.fill")
+        } label: {
+            Label("分享名片", systemImage: "bubble.left.and.bubble.right.fill")
+                .frame(maxWidth: .infinity)
+                .frame(height: 46)
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(.green)
+        .accessibilityIdentifier("placeholder.detail.share")
+    }
+
+    private var detailHeroHeight: CGFloat {
+        dynamicTypeSize.isAccessibilitySize ? 350 : 214
     }
 
     private func placeholder(_ id: String, _ title: String, _ symbol: String) {
@@ -374,5 +432,15 @@ struct CardDetailView: View {
     }
     .environment(AppNavigationModel(initialStage: .main))
     .environment(CardImportSession())
+    .modelContainer(for: BusinessCard.self, inMemory: true)
+}
+
+#Preview("超大动态字体") {
+    NavigationStack {
+        CardDetailView(cardID: FixtureCatalog.demoID)
+    }
+    .environment(AppNavigationModel(initialStage: .main))
+    .environment(CardImportSession())
+    .environment(\.dynamicTypeSize, .accessibility2)
     .modelContainer(for: BusinessCard.self, inMemory: true)
 }

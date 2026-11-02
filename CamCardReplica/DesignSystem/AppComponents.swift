@@ -102,6 +102,7 @@ struct FeatureIconButton: View {
                     .font(.caption)
                     .foregroundStyle(AppColors.textPrimary)
                     .lineLimit(1)
+                    .minimumScaleFactor(0.75)
             }
             .frame(maxWidth: .infinity)
         }
