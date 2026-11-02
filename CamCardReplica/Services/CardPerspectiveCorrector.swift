@@ -1,0 +1,137 @@
+import CoreImage
+import CoreImage.CIFilterBuiltins
+import Foundation
+import UIKit
+import Vision
+
+struct CardQuadrilateral: Equatable, Sendable {
+    let topLeft: CGPoint
+    let topRight: CGPoint
+    let bottomRight: CGPoint
+    let bottomLeft: CGPoint
+}
+
+struct CardImageCorrectionResult: Equatable, Sendable {
+    let imageData: Data
+    let didCorrectPerspective: Bool
+    let quadrilateral: CardQuadrilateral?
+}
+
+enum CardPerspectiveCorrectionError: LocalizedError {
+    case unreadableImage
+    case renderingFailed
+
+    var errorDescription: String? {
+        switch self {
+        case .unreadableImage:
+            "无法读取图片，不能执行边缘检测。"
+        case .renderingFailed:
+            "已检测到名片边缘，但透视校正失败。"
+        }
+    }
+}
+
+enum CardPerspectiveCorrector {
+    nonisolated static func correct(_ imageData: Data) async throws -> CardImageCorrectionResult {
+        try await Task.detached(priority: .userInitiated) {
+            try correctSynchronously(imageData)
+        }.value
+    }
+
+    nonisolated static func correctSynchronously(_ imageData: Data) throws -> CardImageCorrectionResult {
+        guard let inputImage = CIImage(
+            data: imageData,
+            options: [.applyOrientationProperty: true]
+        ) else {
+            throw CardPerspectiveCorrectionError.unreadableImage
+        }
+
+        guard let quadrilateral = try detectQuadrilateral(in: inputImage) else {
+            return CardImageCorrectionResult(
+                imageData: imageData,
+                didCorrectPerspective: false,
+                quadrilateral: nil
+            )
+        }
+        do {
+            return try correctedImage(in: imageData, quadrilateral: quadrilateral)
+        } catch CardPerspectiveCorrectionError.renderingFailed {
+            return CardImageCorrectionResult(
+                imageData: imageData,
+                didCorrectPerspective: false,
+                quadrilateral: quadrilateral
+            )
+        }
+    }
+
+    nonisolated static func correctedImage(
+        in imageData: Data,
+        quadrilateral: CardQuadrilateral
+    ) throws -> CardImageCorrectionResult {
+        guard let inputImage = CIImage(
+            data: imageData,
+            options: [.applyOrientationProperty: true]
+        ) else {
+            throw CardPerspectiveCorrectionError.unreadableImage
+        }
+
+        let extent = inputImage.extent
+        let filter = CIFilter.perspectiveCorrection()
+        filter.inputImage = inputImage
+        filter.topLeft = imagePoint(quadrilateral.topLeft, in: extent)
+        filter.topRight = imagePoint(quadrilateral.topRight, in: extent)
+        filter.bottomRight = imagePoint(quadrilateral.bottomRight, in: extent)
+        filter.bottomLeft = imagePoint(quadrilateral.bottomLeft, in: extent)
+
+        guard let outputImage = filter.outputImage else {
+            throw CardPerspectiveCorrectionError.renderingFailed
+        }
+        let outputExtent = outputImage.extent.integral
+        let context = CIContext(options: [.cacheIntermediates: false])
+        guard !outputExtent.isEmpty,
+              outputExtent.isFinite,
+              let cgImage = context.createCGImage(outputImage, from: outputExtent),
+              let data = UIImage(cgImage: cgImage).jpegData(compressionQuality: 0.92) else {
+            throw CardPerspectiveCorrectionError.renderingFailed
+        }
+
+        return CardImageCorrectionResult(
+            imageData: data,
+            didCorrectPerspective: true,
+            quadrilateral: quadrilateral
+        )
+    }
+
+    nonisolated private static func detectQuadrilateral(in image: CIImage) throws -> CardQuadrilateral? {
+        let request = VNDetectRectanglesRequest()
+        request.maximumObservations = 1
+        request.minimumConfidence = 0.6
+        request.minimumAspectRatio = 0.3
+        request.maximumAspectRatio = 1.0
+        request.minimumSize = 0.18
+        request.quadratureTolerance = 35
+
+        let handler = VNImageRequestHandler(ciImage: image, orientation: .up)
+        try handler.perform([request])
+        guard let rectangle = request.results?.first else { return nil }
+        return CardQuadrilateral(
+            topLeft: rectangle.topLeft,
+            topRight: rectangle.topRight,
+            bottomRight: rectangle.bottomRight,
+            bottomLeft: rectangle.bottomLeft
+        )
+    }
+
+    nonisolated private static func imagePoint(_ normalizedPoint: CGPoint, in extent: CGRect) -> CGPoint {
+        CGPoint(
+            x: extent.minX + normalizedPoint.x * extent.width,
+            y: extent.minY + normalizedPoint.y * extent.height
+        )
+    }
+}
+
+private extension CGRect {
+    nonisolated var isFinite: Bool {
+        minX.isFinite && minY.isFinite && width.isFinite && height.isFinite
+    }
+}

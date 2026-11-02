@@ -128,35 +128,46 @@ struct CardReviewView: View {
     }
 
     private var cardPreview: some View {
-        ZStack(alignment: .bottomTrailing) {
-            Group {
-                if let image = importSession.selectedImage {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .accessibilityLabel("已选择的名片图片")
-                } else {
-                    DemoBusinessCardImage()
+        VStack(alignment: .leading, spacing: 8) {
+            ZStack(alignment: .bottomTrailing) {
+                Group {
+                    if let image = importSession.selectedImage {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFit()
+                            .accessibilityLabel("已选择的名片图片")
+                    } else {
+                        DemoBusinessCardImage()
+                    }
                 }
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                Button {
+                    navigation.showPlaceholder(
+                        id: "review.crop",
+                        title: "边缘检测与透视校正",
+                        message: importSession.didApplyPerspectiveCorrection
+                            ? "已在设备本地自动检测名片四角并完成透视校正。"
+                            : "未检测到可信的名片四边形，当前保留原图；可返回后重新拍摄或选择边缘更清晰的图片。",
+                        source: "核对信息",
+                        symbol: "crop.rotate"
+                    )
+                } label: {
+                    Image(systemName: "crop.rotate")
+                        .font(.title3)
+                        .foregroundStyle(AppColors.primary)
+                        .frame(width: 46, height: 46)
+                        .background(.thinMaterial, in: Circle())
+                }
+                .padding(10)
+                .accessibilityIdentifier("core.review.perspectiveCorrection")
             }
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-            Button {
-                navigation.showPlaceholder(
-                    id: "review.crop",
-                    title: "裁剪与校正",
-                    message: "透视校正和旋转裁剪将在后续扩展中开放。",
-                    source: "核对信息",
-                    symbol: "crop.rotate"
-                )
-            } label: {
-                Image(systemName: "crop.rotate")
-                    .font(.title3)
-                    .foregroundStyle(AppColors.primary)
-                    .frame(width: 46, height: 46)
-                    .background(.thinMaterial, in: Circle())
+
+            if importSession.didApplyPerspectiveCorrection {
+                Label("已自动检测边缘并校正透视", systemImage: "viewfinder.circle.fill")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(AppColors.success)
+                    .accessibilityIdentifier("core.review.correctionApplied")
             }
-            .padding(10)
-            .accessibilityIdentifier("placeholder.review.crop")
         }
         .padding(.horizontal, AppSize.pageInset)
         .padding(.top, 12)

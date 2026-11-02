@@ -186,6 +186,43 @@ final class CamCardReplicaTests: XCTestCase {
         XCTAssertNil(try store.load(relativePath: relativePath))
     }
 
+    func testPerspectiveCorrectionProducesAReadableCroppedImage() throws {
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 1200, height: 800))
+        let sourceData = renderer.pngData { context in
+            UIColor.darkGray.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 1200, height: 800))
+            UIColor.white.setFill()
+            context.cgContext.move(to: CGPoint(x: 150, y: 120))
+            context.cgContext.addLine(to: CGPoint(x: 1080, y: 190))
+            context.cgContext.addLine(to: CGPoint(x: 990, y: 690))
+            context.cgContext.addLine(to: CGPoint(x: 210, y: 740))
+            context.cgContext.closePath()
+            context.cgContext.fillPath()
+        }
+        let quadrilateral = CardQuadrilateral(
+            topLeft: CGPoint(x: 0.175, y: 0.85),
+            topRight: CGPoint(x: 0.825, y: 0.7625),
+            bottomRight: CGPoint(x: 0.9, y: 0.2375),
+            bottomLeft: CGPoint(x: 0.125, y: 0.15)
+        )
+
+        let result = try CardPerspectiveCorrector.correctedImage(
+            in: sourceData,
+            quadrilateral: quadrilateral
+        )
+        let correctedImage = try XCTUnwrap(UIImage(data: result.imageData))
+
+        XCTAssertTrue(result.didCorrectPerspective)
+        XCTAssertEqual(result.quadrilateral, quadrilateral)
+        XCTAssertGreaterThan(correctedImage.size.width, correctedImage.size.height)
+        XCTAssertGreaterThan(result.imageData.count, 1_000)
+
+        let automaticResult = try CardPerspectiveCorrector.correctSynchronously(sourceData)
+        XCTAssertTrue(automaticResult.didCorrectPerspective)
+        XCTAssertNotNil(automaticResult.quadrilateral)
+        XCTAssertNotNil(UIImage(data: automaticResult.imageData))
+    }
+
     func testPersistenceCreatesUpdatesSearchesAndDeletesCardWithImage() throws {
         let directory = try temporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }

@@ -1,5 +1,6 @@
 import PhotosUI
 import SwiftUI
+import UIKit
 
 struct CaptureView: View {
     @Environment(AppNavigationModel.self) private var navigation
@@ -10,6 +11,7 @@ struct CaptureView: View {
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var activeAlert: CaptureAlert?
     @State private var didPrepareImport = false
+    @State private var camera = CameraCaptureController()
 
     private var isUITesting: Bool {
         ProcessInfo.processInfo.arguments.contains("-UITesting")
@@ -26,6 +28,14 @@ struct CaptureView: View {
 
             cameraTexture
 
+#if !targetEnvironment(simulator)
+            if camera.status == .ready || camera.status == .capturing {
+                CameraPreview(session: camera.session)
+                    .ignoresSafeArea()
+                    .transition(.opacity)
+            }
+#endif
+
             VStack(spacing: 18) {
                 captureHeader
                     .padding(.top, 8)
@@ -36,7 +46,10 @@ struct CaptureView: View {
             }
             .padding(.horizontal, 22)
 
-            if importSession.state == .loadingImage || importSession.state == .recognizing {
+            if importSession.state == .loadingImage ||
+                importSession.state == .detectingEdges ||
+                importSession.state == .recognizing ||
+                camera.status == .capturing {
                 recognitionProgress
             }
         }
@@ -52,6 +65,13 @@ struct CaptureView: View {
         .onChange(of: selectedPhoto) { _, item in
             guard let item else { return }
             Task { await importPhoto(item) }
+        }
+        .task {
+            guard !isUITesting else { return }
+            await camera.start()
+        }
+        .onDisappear {
+            camera.stop()
         }
         .alert(item: $activeAlert) { alert in
             switch alert {
@@ -77,6 +97,22 @@ struct CaptureView: View {
                         selectedPhoto = nil
                         navigation.captureState = .selectingImage
                     }
+                )
+            case .cameraPermission:
+                Alert(
+                    title: Text("需要相机权限"),
+                    message: Text("请在系统设置中允许 Cardly 使用相机；图片仅在设备本地检测、校正和识别。"),
+                    primaryButton: .default(Text("打开设置")) {
+                        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+                        UIApplication.shared.open(url)
+                    },
+                    secondaryButton: .cancel(Text("取消"))
+                )
+            case .cameraUnavailable:
+                Alert(
+                    title: Text("相机不可用"),
+                    message: Text("iOS 模拟器不能访问实体相机，请使用左侧相册入口；真机上会显示实时取景并可直接拍摄。"),
+                    dismissButton: .default(Text("知道了"))
                 )
             }
         }
@@ -162,7 +198,7 @@ struct CaptureView: View {
             RoundedRectangle(cornerRadius: 2)
                 .stroke(.white.opacity(0.9), lineWidth: 1.2)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-            Text("正在寻找名片边框")
+            Text(cameraGuidance)
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(.white)
                 .padding(.horizontal, 13)
@@ -227,12 +263,23 @@ struct CaptureView: View {
                 .accessibilityLabel("载入合成测试名片")
                 .accessibilityIdentifier("core.capture.shutter")
             } else {
+#if targetEnvironment(simulator)
                 PhotosPicker(selection: $selectedPhoto, matching: .images) {
                     shutterLabel
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("选择一张名片图片")
+                .accessibilityLabel("模拟器从相册选择名片图片")
                 .accessibilityIdentifier("core.capture.shutter")
+#else
+                Button {
+                    Task { await capturePhoto() }
+                } label: {
+                    shutterLabel
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("拍摄名片")
+                .accessibilityIdentifier("core.capture.shutter")
+#endif
             }
 
             Button {
@@ -271,7 +318,7 @@ struct CaptureView: View {
             ProgressView()
                 .tint(.white)
                 .scaleEffect(1.2)
-            Text(importSession.state == .loadingImage ? "正在读取图片…" : "正在本地识别名片…")
+            Text(progressTitle)
                 .font(.headline)
                 .foregroundStyle(.white)
             Text("图片仅在设备上处理")
@@ -284,6 +331,35 @@ struct CaptureView: View {
         .accessibilityIdentifier("core.capture.recognizing")
     }
 
+    private var cameraGuidance: String {
+        switch camera.status {
+        case .ready, .capturing:
+            "将名片完整放入框内"
+        case .denied:
+            "相机权限未开启，请使用相册"
+        case .unavailable:
+            "模拟器请使用相册导入"
+        case .failed:
+            "相机启动失败，请使用相册"
+        default:
+            "正在准备相机"
+        }
+    }
+
+    private var progressTitle: String {
+        if camera.status == .capturing { return "正在拍摄名片…" }
+        switch importSession.state {
+        case .loadingImage:
+            return "正在读取图片…"
+        case .detectingEdges:
+            return "正在检测边缘并校正透视…"
+        case .recognizing:
+            return "正在本地识别名片…"
+        default:
+            return "正在处理图片…"
+        }
+    }
+
     private func openFixtureForUITest() {
         importSession.loadFixture()
         navigation.captureState = .reviewing
@@ -294,6 +370,42 @@ struct CaptureView: View {
         navigation.captureState = .previewing
         let outcome = await importSession.importPhoto(item)
         selectedPhoto = nil
+        handleImportOutcome(outcome)
+    }
+
+    private func capturePhoto() async {
+        if camera.status == .idle {
+            await camera.start()
+        }
+
+        switch camera.status {
+        case .denied:
+            activeAlert = .cameraPermission
+            return
+        case .unavailable:
+            activeAlert = .cameraUnavailable
+            return
+        case let .failed(message):
+            activeAlert = .failure(message)
+            return
+        case .idle, .requestingPermission, .configuring:
+            return
+        case .capturing:
+            return
+        case .ready:
+            break
+        }
+
+        do {
+            let data = try await camera.capturePhoto()
+            navigation.captureState = .previewing
+            handleImportOutcome(await importSession.importImageData(data))
+        } catch {
+            activeAlert = .failure(error.localizedDescription)
+        }
+    }
+
+    private func handleImportOutcome(_ outcome: CardImportOutcome) {
         switch outcome {
         case .cancelled:
             navigation.captureState = .idle
@@ -313,11 +425,15 @@ struct CaptureView: View {
 private enum CaptureAlert: Identifiable {
     case noText
     case failure(String)
+    case cameraPermission
+    case cameraUnavailable
 
     var id: String {
         switch self {
         case .noText: "noText"
         case let .failure(message): "failure-\(message)"
+        case .cameraPermission: "cameraPermission"
+        case .cameraUnavailable: "cameraUnavailable"
         }
     }
 }

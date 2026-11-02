@@ -7,6 +7,7 @@ import UIKit
 enum CardImportState: Equatable {
     case idle
     case loadingImage
+    case detectingEdges
     case recognizing
     case ready
     case noText
@@ -29,6 +30,7 @@ final class CardImportSession {
     private(set) var isManualEntry = false
     private(set) var editingCardID: UUID?
     private(set) var savedCardID: UUID?
+    private(set) var didApplyPerspectiveCorrection = false
 
     init(draft: BusinessCardDraft = .fixture, imageData: Data? = nil) {
         self.draft = draft
@@ -44,6 +46,7 @@ final class CardImportSession {
         isManualEntry = false
         editingCardID = nil
         savedCardID = nil
+        didApplyPerspectiveCorrection = false
     }
 
     func importPhoto(_ item: PhotosPickerItem?) async -> CardImportOutcome {
@@ -52,7 +55,6 @@ final class CardImportSession {
         let previousImageData = imageData
         state = .loadingImage
         isManualEntry = false
-
         do {
             guard let data = try await item.loadTransferable(type: Data.self),
                   UIImage(data: data) != nil else {
@@ -63,9 +65,85 @@ final class CardImportSession {
                 )
             }
 
-            imageData = data
+            return await processImageData(
+                data,
+                previousDraft: previousDraft,
+                previousImageData: previousImageData
+            )
+        } catch {
+            return fail(
+                error.localizedDescription,
+                restoring: previousDraft,
+                imageData: previousImageData
+            )
+        }
+    }
+
+    func importImageData(_ data: Data) async -> CardImportOutcome {
+        let previousDraft = draft
+        let previousImageData = imageData
+        guard UIImage(data: data) != nil else {
+            return fail(
+                "无法读取拍摄的图片，请重新拍摄。",
+                restoring: previousDraft,
+                imageData: previousImageData
+            )
+        }
+        return await processImageData(
+            data,
+            previousDraft: previousDraft,
+            previousImageData: previousImageData
+        )
+    }
+
+    func continueWithManualEntry() {
+        draft = .empty
+        state = .ready
+        isManualEntry = true
+        didApplyPerspectiveCorrection = false
+    }
+
+    func loadFixture() {
+        draft = .fixture
+        imageData = UIImage(named: FixtureCatalog.syntheticBusinessCard.assetName)?.pngData()
+        state = .ready
+        isManualEntry = false
+        editingCardID = nil
+        savedCardID = nil
+        didApplyPerspectiveCorrection = false
+    }
+
+    func prepareForEditing(_ card: BusinessCard, imageData: Data?) {
+        draft = card.draft
+        self.imageData = imageData
+        state = .ready
+        isManualEntry = false
+        editingCardID = card.id
+        savedCardID = nil
+        didApplyPerspectiveCorrection = false
+    }
+
+    func markSaved(cardID: UUID) {
+        editingCardID = cardID
+        savedCardID = cardID
+        state = .ready
+    }
+
+    private func processImageData(
+        _ data: Data,
+        previousDraft: BusinessCardDraft,
+        previousImageData: Data?
+    ) async -> CardImportOutcome {
+        state = .detectingEdges
+        isManualEntry = false
+
+        do {
+            let correction = try await CardPerspectiveCorrector.correct(data)
+            imageData = correction.imageData
+            didApplyPerspectiveCorrection = correction.didCorrectPerspective
+
             state = .recognizing
-            let rawText = try await VisionTextRecognizer.recognizeText(in: data)
+            let rawText = try await VisionTextRecognizer.recognizeText(in: correction.imageData)
             guard !BusinessCardFieldParser.normalizedLines(in: rawText).isEmpty else {
                 draft = .empty
                 state = .noText
@@ -76,6 +154,7 @@ final class CardImportSession {
             state = .ready
             return .ready
         } catch {
+            didApplyPerspectiveCorrection = false
             return fail(
                 error.localizedDescription,
                 restoring: previousDraft,
@@ -84,42 +163,13 @@ final class CardImportSession {
         }
     }
 
-    func continueWithManualEntry() {
-        draft = .empty
-        state = .ready
-        isManualEntry = true
-    }
-
-    func loadFixture() {
-        draft = .fixture
-        imageData = UIImage(named: FixtureCatalog.syntheticBusinessCard.assetName)?.pngData()
-        state = .ready
-        isManualEntry = false
-        editingCardID = nil
-        savedCardID = nil
-    }
-
-    func prepareForEditing(_ card: BusinessCard, imageData: Data?) {
-        draft = card.draft
-        self.imageData = imageData
-        state = .ready
-        isManualEntry = false
-        editingCardID = card.id
-        savedCardID = nil
-    }
-
-    func markSaved(cardID: UUID) {
-        editingCardID = cardID
-        savedCardID = cardID
-        state = .ready
-    }
-
     private func fail(
         _ message: String,
         restoring previousDraft: BusinessCardDraft,
         imageData previousImageData: Data?
     ) -> CardImportOutcome {
         imageData = previousImageData
+        didApplyPerspectiveCorrection = false
         draft = previousDraft
         let safeMessage = message.isEmpty ? "识别失败，请重新选择图片。" : message
         state = .failed(message: safeMessage)
