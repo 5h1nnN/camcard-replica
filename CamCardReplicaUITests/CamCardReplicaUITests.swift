@@ -120,6 +120,29 @@ final class CamCardReplicaUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["课程同学"].waitForExistence(timeout: 2))
     }
 
+    func testSavedCardCanCreateAndThenUpdateASystemContact() {
+        login()
+        app.buttons["core.tab.capture"].tap()
+        XCTAssertTrue(element("screen.capture").waitForExistence(timeout: 3))
+        app.buttons["core.capture.shutter"].tap()
+        XCTAssertTrue(element("screen.review").waitForExistence(timeout: 3))
+        app.buttons["core.review.save"].tap()
+        XCTAssertTrue(element("screen.result").waitForExistence(timeout: 5))
+
+        app.buttons["core.result.contacts"].tap()
+        let createdAlert = app.alerts["已存入系统通讯录"]
+        XCTAssertTrue(createdAlert.waitForExistence(timeout: 3))
+        createdAlert.buttons.matching(identifier: "完成").firstMatch.tap()
+
+        app.buttons["core.result.detail"].tap()
+        XCTAssertTrue(element("screen.detail").waitForExistence(timeout: 3))
+        app.buttons["core.detail.contacts"].tap()
+        let updatedAlert = app.alerts["已更新系统通讯录"]
+        XCTAssertTrue(updatedAlert.waitForExistence(timeout: 3))
+        updatedAlert.buttons.matching(identifier: "完成").firstMatch.tap()
+        XCTAssertTrue(element("screen.detail").exists)
+    }
+
     func testSavedCardPersistsCanBeSearchedEditedAndDeleted() {
         login()
         app.buttons["core.tab.capture"].tap()

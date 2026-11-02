@@ -1,6 +1,7 @@
 import XCTest
 import SwiftData
 import UIKit
+import Contacts
 @testable import CamCardReplica
 
 @MainActor
@@ -377,6 +378,31 @@ final class CamCardReplicaTests: XCTestCase {
         XCTAssertEqual(GroupCardFilter.cards([grouped, oldUngrouped], matching: .ungrouped, now: now).map(\.id), [oldUngrouped.id])
         XCTAssertEqual(GroupCardFilter.cards([grouped, oldUngrouped], matching: .byJob, now: now).map(\.id), [grouped.id])
         XCTAssertEqual(GroupCardFilter.cards([grouped, oldUngrouped], matching: .byCity, now: now).map(\.id), [grouped.id])
+    }
+
+    func testSystemContactMappingUsesOnlyConfirmedCardFields() throws {
+        var draft = BusinessCardDraft.fixture
+        draft.officePhone = "021-5555-0198"
+        draft.notes = "不应写入需要额外 entitlement 的联系人备注"
+
+        let contact = try SystemContactExporter.makeContact(from: draft)
+
+        XCTAssertEqual(contact.contactType, .person)
+        XCTAssertEqual(contact.givenName, draft.name)
+        XCTAssertEqual(contact.organizationName, draft.company)
+        XCTAssertEqual(contact.jobTitle, draft.jobTitle)
+        XCTAssertEqual(contact.phoneNumbers.map(\.value.stringValue), [draft.mobilePhone, draft.officePhone])
+        XCTAssertEqual(contact.emailAddresses.map { $0.value as String }, [draft.email])
+        XCTAssertEqual(contact.urlAddresses.map { $0.value as String }, [draft.website])
+        XCTAssertEqual(contact.postalAddresses.first?.value.street, draft.address)
+    }
+
+    func testSystemContactMappingRequiresANameOrCompany() {
+        XCTAssertThrowsError(try SystemContactExporter.makeContact(from: .empty)) { error in
+            guard case ContactExportError.missingIdentity = error else {
+                return XCTFail("Expected missingIdentity, got \(error)")
+            }
+        }
     }
 
     private func makeTextImage(lines: [String], fontName: String = "HelveticaNeue-Bold") -> Data {

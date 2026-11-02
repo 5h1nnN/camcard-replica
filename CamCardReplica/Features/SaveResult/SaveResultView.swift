@@ -4,8 +4,11 @@ import SwiftData
 struct SaveResultView: View {
     @Environment(AppNavigationModel.self) private var navigation
     @Environment(CardImportSession.self) private var importSession
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Query(sort: \BusinessCard.updatedAt, order: .reverse) private var cards: [BusinessCard]
+    @State private var isExportingContact = false
+    @State private var contactExportNotice: ContactExportNotice?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -28,6 +31,7 @@ struct SaveResultView: View {
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .screenIdentifier("screen.result")
+        .contactExportAlert(notice: $contactExportNotice)
         .onAppear {
             navigation.captureState = .completed
         }
@@ -136,11 +140,15 @@ struct SaveResultView: View {
         actionButton("分组", "person.2.fill", "group")
         actionButton("备注", "note.text", "note")
         actionButton("提醒", "alarm.fill", "reminder")
-        actionButton("存入通讯录", "person.crop.rectangle.fill", "contacts")
+        actionButton(contactActionTitle, "person.crop.rectangle.fill", "contacts")
     }
 
     private func actionButton(_ title: String, _ symbol: String, _ id: String) -> some View {
         FeatureIconButton(title: title, symbol: symbol) {
+            if id == "contacts" {
+                exportToContacts()
+                return
+            }
             if id == "group", let cardID = importSession.savedCardID {
                 navigation.push(.groupAssignment(cardID))
                 return
@@ -152,12 +160,16 @@ struct SaveResultView: View {
             navigation.showPlaceholder(
                 id: "result.\(id)",
                 title: title,
-                message: id == "contacts" ? "演示版本不会写入系统通讯录。" : "该操作入口已保留，演示版本暂未开放。",
+                message: "该操作入口已保留，演示版本暂未开放。",
                 source: "保存结果",
                 symbol: symbol
             )
         }
-        .accessibilityIdentifier(id == "group" ? "core.result.group" : "placeholder.result.\(id)")
+        .disabled(id == "contacts" && isExportingContact)
+        .accessibilityIdentifier(
+            id == "group" ? "core.result.group" :
+                id == "contacts" ? "core.result.contacts" : "placeholder.result.\(id)"
+        )
     }
 
     private var bottomActions: some View {
@@ -203,11 +215,40 @@ struct SaveResultView: View {
     }
 
     private var summaryDraft: BusinessCardDraft {
-        guard let savedCardID = importSession.savedCardID,
-              let card = cards.first(where: { $0.id == savedCardID }) else {
-            return importSession.draft
+        savedCard?.draft ?? importSession.draft
+    }
+
+    private var savedCard: BusinessCard? {
+        guard let savedCardID = importSession.savedCardID else { return nil }
+        return cards.first(where: { $0.id == savedCardID })
+    }
+
+    private var contactActionTitle: String {
+        if isExportingContact { return "正在保存" }
+        return savedCard?.systemContactIdentifier == nil ? "存入通讯录" : "更新通讯录"
+    }
+
+    private func exportToContacts() {
+        guard !isExportingContact else { return }
+        Task {
+            isExportingContact = true
+            defer { isExportingContact = false }
+            do {
+                let outcome = try await SystemContactExporter.export(
+                    draft: summaryDraft,
+                    existingIdentifier: savedCard?.systemContactIdentifier
+                )
+                savedCard?.systemContactIdentifier = outcome.identifier
+                try? modelContext.save()
+                contactExportNotice = .success(created: outcome.createdNewContact)
+            } catch ContactExportError.permissionDenied {
+                contactExportNotice = .permissionDenied
+            } catch ContactExportError.restricted {
+                contactExportNotice = .restricted
+            } catch {
+                contactExportNotice = .failure(error.localizedDescription)
+            }
         }
-        return card.draft
     }
 }
 

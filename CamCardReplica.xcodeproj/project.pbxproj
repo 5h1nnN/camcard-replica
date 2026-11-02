@@ -399,6 +399,7 @@
 				EXCLUDED_SOURCE_FILE_NAMES = "*.gitkeep";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "用于拍摄名片，并在设备本地检测边缘、校正透视和识别文字。";
+				INFOPLIST_KEY_NSContactsUsageDescription = "用于将您确认后的名片信息保存或更新到系统通讯录。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -432,6 +433,7 @@
 				EXCLUDED_SOURCE_FILE_NAMES = "*.gitkeep";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "用于拍摄名片，并在设备本地检测边缘、校正透视和识别文字。";
+				INFOPLIST_KEY_NSContactsUsageDescription = "用于将您确认后的名片信息保存或更新到系统通讯录。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

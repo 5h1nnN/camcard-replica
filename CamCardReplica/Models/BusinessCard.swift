@@ -17,6 +17,7 @@ final class BusinessCard {
     var notes: String
     var isFavorite: Bool
     var groupIDs: [UUID] = []
+    var systemContactIdentifier: String?
     var createdAt: Date
     var updatedAt: Date
 
@@ -26,6 +27,7 @@ final class BusinessCard {
         draft: BusinessCardDraft,
         isFavorite: Bool = false,
         groupIDs: [UUID] = [],
+        systemContactIdentifier: String? = nil,
         createdAt: Date = .now,
         updatedAt: Date = .now
     ) {
@@ -43,6 +45,7 @@ final class BusinessCard {
         self.notes = draft.notes
         self.isFavorite = isFavorite
         self.groupIDs = groupIDs
+        self.systemContactIdentifier = systemContactIdentifier
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }

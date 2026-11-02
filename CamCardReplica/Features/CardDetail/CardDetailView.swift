@@ -13,6 +13,8 @@ struct CardDetailView: View {
     @State private var demoIsFavorite = false
     @State private var showsDeleteConfirmation = false
     @State private var operationError: String?
+    @State private var isExportingContact = false
+    @State private var contactExportNotice: ContactExportNotice?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -46,6 +48,7 @@ struct CardDetailView: View {
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .screenIdentifier("screen.detail")
+        .contactExportAlert(notice: $contactExportNotice)
         .confirmationDialog(
             "删除这张名片？",
             isPresented: $showsDeleteConfirmation,
@@ -310,16 +313,16 @@ struct CardDetailView: View {
 
     private var contactsButton: some View {
         Button {
-            placeholder("contacts", "存入通讯录", "person.crop.rectangle")
+            exportToContacts()
         } label: {
             if dynamicTypeSize.isAccessibilitySize {
-                Label("存入通讯录", systemImage: "person.crop.rectangle")
+                Label(contactActionTitle, systemImage: "person.crop.rectangle")
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
             } else {
                 VStack(spacing: 3) {
                     Image(systemName: "person.crop.rectangle")
-                    Text("存入通讯录")
+                    Text(contactActionTitle)
                         .font(.caption2)
                 }
                 .frame(width: 74, height: 50)
@@ -327,7 +330,8 @@ struct CardDetailView: View {
         }
         .buttonStyle(.plain)
         .foregroundStyle(AppColors.primary)
-        .accessibilityIdentifier("placeholder.detail.contacts")
+        .disabled(isExportingContact)
+        .accessibilityIdentifier(storedCard == nil ? "placeholder.detail.contacts" : "core.detail.contacts")
     }
 
     private var exchangeButton: some View {
@@ -364,7 +368,7 @@ struct CardDetailView: View {
         navigation.showPlaceholder(
             id: "detail.\(id)",
             title: title,
-            message: id == "contacts" ? "演示版本不会写入系统通讯录。" : "该操作入口已保留，演示版本暂未开放。",
+            message: "该操作入口已保留，演示版本暂未开放。",
             source: "名片详情",
             symbol: symbol
         )
@@ -390,6 +394,11 @@ struct CardDetailView: View {
 
     private var isFavorite: Bool {
         storedCard?.isFavorite ?? demoIsFavorite
+    }
+
+    private var contactActionTitle: String {
+        if isExportingContact { return "正在保存" }
+        return storedCard?.systemContactIdentifier == nil ? "存入通讯录" : "更新通讯录"
     }
 
     private func display(_ value: String, fallback: String) -> String {
@@ -424,6 +433,33 @@ struct CardDetailView: View {
         } catch {
             modelContext.rollback()
             operationError = "无法保存收藏状态，请稍后重试。"
+        }
+    }
+
+    private func exportToContacts() {
+        guard !isExportingContact else { return }
+        guard let card = storedCard else {
+            placeholder("contacts", "存入通讯录", "person.crop.rectangle")
+            return
+        }
+        Task {
+            isExportingContact = true
+            defer { isExportingContact = false }
+            do {
+                let outcome = try await SystemContactExporter.export(
+                    draft: card.draft,
+                    existingIdentifier: card.systemContactIdentifier
+                )
+                card.systemContactIdentifier = outcome.identifier
+                try? modelContext.save()
+                contactExportNotice = .success(created: outcome.createdNewContact)
+            } catch ContactExportError.permissionDenied {
+                contactExportNotice = .permissionDenied
+            } catch ContactExportError.restricted {
+                contactExportNotice = .restricted
+            } catch {
+                contactExportNotice = .failure(error.localizedDescription)
+            }
         }
     }
 
