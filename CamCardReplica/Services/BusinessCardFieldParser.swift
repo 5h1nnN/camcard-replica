@@ -17,10 +17,16 @@ enum BusinessCardFieldParser {
         ).trimmingCharacters(in: CharacterSet(charactersIn: ".,;，；"))
 
         let phoneLines = lines.filter(isPhoneLine)
-        let mobilePhone = phoneLines.first(where: isMobilePhoneLine) ?? phoneLines.first ?? ""
-        let officePhone = phoneLines.first(where: { $0 != mobilePhone }) ?? ""
+        let faxPhone = phoneLines.first(where: isFaxPhoneLine) ?? ""
+        let mobilePhone = phoneLines.first(where: isMobilePhoneLine)
+            ?? phoneLines.first(where: { !isFaxPhoneLine($0) && !isOfficePhoneLine($0) })
+            ?? phoneLines.first(where: { !isFaxPhoneLine($0) })
+            ?? ""
+        let officePhone = phoneLines.first(where: {
+            $0 != mobilePhone && $0 != faxPhone && isOfficePhoneLine($0)
+        }) ?? phoneLines.first(where: { $0 != mobilePhone && $0 != faxPhone }) ?? ""
         let excluded = Set(
-            [email, website, mobilePhone, officePhone]
+            [email, website, mobilePhone, officePhone, faxPhone]
                 .filter { !$0.isEmpty }
                 .flatMap { value in lines.filter { $0.localizedCaseInsensitiveContains(value) } }
         )
@@ -40,6 +46,7 @@ enum BusinessCardFieldParser {
             jobTitle: jobTitle,
             mobilePhone: cleanPhone(mobilePhone),
             officePhone: cleanPhone(officePhone),
+            faxPhone: cleanPhone(faxPhone),
             email: email,
             website: website,
             address: address,
@@ -87,10 +94,20 @@ enum BusinessCardFieldParser {
             line.range(of: #"(?:\+?86[\s-]?)?1[3-9]\d(?:[\s-]?\d){8}"#, options: .regularExpression) != nil
     }
 
+    nonisolated private static func isOfficePhoneLine(_ line: String) -> Bool {
+        containsAny(line, ["座机", "办公", "office", "work", "direct", "电话", "phone", "tel"])
+            && !isMobilePhoneLine(line)
+            && !isFaxPhoneLine(line)
+    }
+
+    nonisolated private static func isFaxPhoneLine(_ line: String) -> Bool {
+        containsAny(line, ["传真", "fax"])
+    }
+
     nonisolated private static func cleanPhone(_ line: String) -> String {
         guard !line.isEmpty else { return "" }
         let withoutLabel = line.replacingOccurrences(
-            of: #"(?i)^\s*(?:手机|移动电话|电话|座机|mobile|cell|phone|tel|t)\s*[:：]?\s*"#,
+            of: #"(?i)^\s*(?:手机|移动电话|电话|座机|办公电话|传真|mobile(?:\s+phone)?|cell(?:\s+phone)?|office(?:\s+phone)?|work(?:\s+phone)?|phone|tel(?:ephone)?|fax|t|f)\s*[:：]?\s*"#,
             with: "",
             options: .regularExpression
         )
@@ -119,7 +136,7 @@ enum BusinessCardFieldParser {
     }
 
     nonisolated private static func isContactOnlyLine(_ line: String) -> Bool {
-        containsAny(line, ["邮箱", "email", "网址", "website", "电话", "手机", "mobile", "phone", "tel"])
+        containsAny(line, ["邮箱", "email", "网址", "website", "电话", "手机", "传真", "mobile", "phone", "tel", "fax"])
     }
 
     nonisolated private static func isPlausibleName(_ line: String) -> Bool {

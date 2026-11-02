@@ -105,6 +105,25 @@ final class CamCardReplicaTests: XCTestCase {
         XCTAssertEqual(draft.address, "88 Innovation Road, Seattle")
     }
 
+    func testMultiplePhoneTypesAreClassifiedWithoutLosingFax() {
+        let draft = BusinessCardFieldParser.parse(
+            """
+            Jordan Lee
+            Lee Consulting
+            Managing Director
+            Mobile: +1 415 555 0101
+            Office: +1 415 555 0102
+            Fax: +1 415 555 0103
+            jordan@example.com
+            """
+        )
+
+        XCTAssertEqual(draft.mobilePhone, "+1 415 555 0101")
+        XCTAssertEqual(draft.officePhone, "+1 415 555 0102")
+        XCTAssertEqual(draft.faxPhone, "+1 415 555 0103")
+        XCTAssertTrue(BusinessCard(draft: draft).matches("0103"))
+    }
+
     func testRecognizedTextIsSortedByRowsThenColumns() {
         let lines = [
             RecognizedTextLine(text: "right", boundingBox: CGRect(x: 0.6, y: 0.8, width: 0.2, height: 0.1)),
@@ -383,6 +402,7 @@ final class CamCardReplicaTests: XCTestCase {
     func testSystemContactMappingUsesOnlyConfirmedCardFields() throws {
         var draft = BusinessCardDraft.fixture
         draft.officePhone = "021-5555-0198"
+        draft.faxPhone = "021-5555-0199"
         draft.notes = "不应写入需要额外 entitlement 的联系人备注"
 
         let contact = try SystemContactExporter.makeContact(from: draft)
@@ -391,7 +411,11 @@ final class CamCardReplicaTests: XCTestCase {
         XCTAssertEqual(contact.givenName, draft.name)
         XCTAssertEqual(contact.organizationName, draft.company)
         XCTAssertEqual(contact.jobTitle, draft.jobTitle)
-        XCTAssertEqual(contact.phoneNumbers.map(\.value.stringValue), [draft.mobilePhone, draft.officePhone])
+        XCTAssertEqual(
+            contact.phoneNumbers.map(\.value.stringValue),
+            [draft.mobilePhone, draft.officePhone, draft.faxPhone]
+        )
+        XCTAssertEqual(contact.phoneNumbers.last?.label, CNLabelPhoneNumberWorkFax)
         XCTAssertEqual(contact.emailAddresses.map { $0.value as String }, [draft.email])
         XCTAssertEqual(contact.urlAddresses.map { $0.value as String }, [draft.website])
         XCTAssertEqual(contact.postalAddresses.first?.value.street, draft.address)

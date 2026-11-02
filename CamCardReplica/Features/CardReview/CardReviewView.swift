@@ -31,6 +31,8 @@ struct CardReviewView: View {
                         fieldRow(type: "手机", text: draftBinding(\.mobilePhone))
                         Divider().padding(.leading, 110)
                         fieldRow(type: "座机", text: draftBinding(\.officePhone))
+                        Divider().padding(.leading, 110)
+                        fieldRow(type: "传真", text: draftBinding(\.faxPhone))
                     }
                     ReviewFieldSection(title: "邮箱", showsAdd: true, addAction: addEmail) {
                         fieldRow(type: "工作邮箱", text: draftBinding(\.email))
@@ -306,7 +308,9 @@ struct CardReviewView: View {
         navigation.showPlaceholder(
             id: "review.add.\(type)",
             title: "添加\(type)",
-            message: "当前草稿支持一个主要值；多电话和多邮箱将在后续扩展。",
+            message: type == "电话"
+                ? "当前草稿已支持手机、座机和传真；更多同类型号码将在后续扩展。"
+                : "当前草稿支持一个主要值；更多同类型字段将在后续扩展。",
             source: "核对信息",
             symbol: symbol
         )

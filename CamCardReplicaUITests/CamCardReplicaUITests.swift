@@ -49,6 +49,34 @@ final class CamCardReplicaUITests: XCTestCase {
         XCTAssertTrue(element("screen.detail").waitForExistence(timeout: 3))
     }
 
+    func testDetailDisplaysEverySavedContactField() {
+        login()
+
+        app.buttons["core.tab.capture"].tap()
+        XCTAssertTrue(element("screen.capture").waitForExistence(timeout: 3))
+        app.buttons["core.capture.shutter"].tap()
+        XCTAssertTrue(element("screen.review").waitForExistence(timeout: 3))
+
+        app.buttons["core.review.save"].tap()
+        XCTAssertTrue(element("screen.result").waitForExistence(timeout: 5))
+        app.buttons["core.result.detail"].tap()
+        XCTAssertTrue(element("screen.detail").waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["远山创意工作室"].waitForExistence(timeout: 2))
+
+        for value in [
+            "+86 138 0000 0000",
+            "021-5555-0102",
+            "021-5555-0103",
+            "demo@example.com",
+            "www.example.com",
+            "示例市创新路 88 号"
+        ] {
+            let field = app.staticTexts[value]
+            reveal(field)
+            XCTAssertTrue(field.exists, "详情页应显示已保存字段：\(value)")
+        }
+    }
+
     func testPlaceholderFeedbackCanBeClosed() {
         login()
 
@@ -214,6 +242,13 @@ final class CamCardReplicaUITests: XCTestCase {
 
     private func element(_ identifier: String) -> XCUIElement {
         app.descendants(matching: .any)[identifier]
+    }
+
+    private func reveal(_ element: XCUIElement, maximumSwipes: Int = 8) {
+        for _ in 0..<maximumSwipes where !element.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(element.waitForExistence(timeout: 2))
     }
 
     private var savedCardButton: XCUIElement {

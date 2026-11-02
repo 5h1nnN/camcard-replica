@@ -7,6 +7,7 @@ struct BusinessCardDraft: Equatable, Sendable {
     var jobTitle: String
     var mobilePhone: String
     var officePhone: String
+    var faxPhone: String
     var email: String
     var website: String
     var address: String
@@ -19,6 +20,7 @@ struct BusinessCardDraft: Equatable, Sendable {
         jobTitle: "",
         mobilePhone: "",
         officePhone: "",
+        faxPhone: "",
         email: "",
         website: "",
         address: "",
@@ -33,7 +35,8 @@ struct BusinessCardDraft: Equatable, Sendable {
             company: fixture.company,
             jobTitle: fixture.jobTitle,
             mobilePhone: fixture.mobilePhone,
-            officePhone: "",
+            officePhone: fixture.officePhone,
+            faxPhone: fixture.faxPhone,
             email: fixture.email,
             website: fixture.website,
             address: fixture.address,

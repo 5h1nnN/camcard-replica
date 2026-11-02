@@ -155,6 +155,10 @@ struct CardDetailView: View {
                 .font(.body)
                 .foregroundStyle(AppColors.textSecondary)
                 .lineLimit(2)
+            Text(display(currentDraft.company, fallback: "未填写公司"))
+                .font(.subheadline)
+                .foregroundStyle(AppColors.textSecondary)
+                .lineLimit(2)
         }
     }
 
@@ -245,23 +249,34 @@ struct CardDetailView: View {
 
     private var contactSection: some View {
         VStack(spacing: 0) {
-            contactRow(display(currentDraft.mobilePhone, fallback: "未填写电话"), "phone.fill", trailingSymbol: "message.fill", id: "phone")
+            contactRow(display(currentDraft.mobilePhone, fallback: "未填写手机"), "iphone", trailingSymbol: "message.fill", id: "mobilePhone")
+            Divider().padding(.leading, 52)
+            contactRow(display(currentDraft.officePhone, fallback: "未填写座机"), "phone.fill", id: "officePhone")
+            Divider().padding(.leading, 52)
+            contactRow(display(currentDraft.faxPhone, fallback: "未填写传真"), "printer.fill", id: "faxPhone")
             Divider().padding(.leading, 52)
             contactRow(display(currentDraft.email, fallback: "未填写邮箱"), "envelope.fill", id: "email")
             Divider().padding(.leading, 52)
-            contactRow(display(currentDraft.address, fallback: "未填写地址"), "mappin.and.ellipse", id: "addressField")
+            contactRow(display(currentDraft.website, fallback: "未填写网站"), "globe", id: "website")
             Divider().padding(.leading, 52)
-            Button {
-                placeholder("moreFields", "更多字段", "chevron.down")
-            } label: {
-                Label("更多", systemImage: "chevron.down")
-                    .labelStyle(.titleAndIcon)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity)
-                    .padding(16)
+            contactRow(display(currentDraft.address, fallback: "未填写地址"), "mappin.and.ellipse", id: "addressField")
+            if !currentDraft.ocrRawText.isEmpty {
+                Divider().padding(.leading, 52)
+                DisclosureGroup {
+                    Text(currentDraft.ocrRawText)
+                        .font(.footnote.monospaced())
+                        .foregroundStyle(AppColors.textSecondary)
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 10)
+                } label: {
+                    Label("OCR 原始文本", systemImage: "doc.text.magnifyingglass")
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.textPrimary)
+                }
+                .padding(16)
+                .accessibilityIdentifier("core.detail.rawText")
             }
-            .accessibilityIdentifier("placeholder.detail.moreFields")
         }
         .background(.white)
     }

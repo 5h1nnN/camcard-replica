@@ -141,7 +141,8 @@ enum SystemContactExporter {
 
         contact.phoneNumbers = [
             labeledPhone(draft.mobilePhone, label: CNLabelPhoneNumberMobile),
-            labeledPhone(draft.officePhone, label: CNLabelWork)
+            labeledPhone(draft.officePhone, label: CNLabelWork),
+            labeledPhone(draft.faxPhone, label: CNLabelPhoneNumberWorkFax)
         ].compactMap { $0 }
 
         let email = draft.email.trimmingCharacters(in: .whitespacesAndNewlines)

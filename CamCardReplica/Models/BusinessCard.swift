@@ -11,6 +11,7 @@ final class BusinessCard {
     var jobTitle: String
     var mobilePhone: String
     var officePhone: String
+    var faxPhone: String = ""
     var email: String
     var website: String
     var address: String
@@ -39,6 +40,7 @@ final class BusinessCard {
         self.jobTitle = draft.jobTitle
         self.mobilePhone = draft.mobilePhone
         self.officePhone = draft.officePhone
+        self.faxPhone = draft.faxPhone
         self.email = draft.email
         self.website = draft.website
         self.address = draft.address
@@ -58,6 +60,7 @@ final class BusinessCard {
             jobTitle: jobTitle,
             mobilePhone: mobilePhone,
             officePhone: officePhone,
+            faxPhone: faxPhone,
             email: email,
             website: website,
             address: address,
@@ -72,6 +75,7 @@ final class BusinessCard {
         jobTitle = draft.jobTitle
         mobilePhone = draft.mobilePhone
         officePhone = draft.officePhone
+        faxPhone = draft.faxPhone
         email = draft.email
         website = draft.website
         address = draft.address
@@ -82,7 +86,7 @@ final class BusinessCard {
     func matches(_ query: String) -> Bool {
         let needle = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !needle.isEmpty else { return true }
-        return [name, company, jobTitle, mobilePhone, officePhone, email]
+        return [name, company, jobTitle, mobilePhone, officePhone, faxPhone, email, website, address]
             .contains { $0.localizedCaseInsensitiveContains(needle) }
     }
 }
