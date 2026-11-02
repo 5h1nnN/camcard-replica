@@ -311,6 +311,74 @@ final class CamCardReplicaTests: XCTestCase {
         }
     }
 
+    func testCardGroupsCreateRenameAssignAndDeleteWithoutDeletingCard() throws {
+        let container = try ModelContainer(
+            for: BusinessCard.self,
+            CardGroup.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+        let context = ModelContext(container)
+        let card = BusinessCard(draft: .fixture)
+        context.insert(card)
+
+        let group = try CardGroupStore.create(
+            name: "  课程同学  ",
+            groups: [],
+            in: context,
+            now: Date(timeIntervalSince1970: 100)
+        )
+        XCTAssertEqual(group.name, "课程同学")
+        XCTAssertEqual(group.sortOrder, 0)
+
+        try CardGroupStore.setGroups(
+            [group.id],
+            for: card,
+            availableGroups: [group],
+            in: context,
+            now: Date(timeIntervalSince1970: 200)
+        )
+        XCTAssertEqual(card.groupIDs, [group.id])
+        XCTAssertEqual(CardGroupStore.groupNames(for: card, groups: [group]), ["课程同学"])
+
+        try CardGroupStore.rename(group, to: "移动开发", groups: [group], in: context)
+        XCTAssertEqual(group.name, "移动开发")
+
+        XCTAssertThrowsError(
+            try CardGroupStore.create(name: "移动开发", groups: [group], in: context)
+        ) { error in
+            XCTAssertEqual(error as? CardGroupStoreError, .duplicateName)
+        }
+
+        try CardGroupStore.delete(group, cards: [card], in: context)
+        XCTAssertTrue(card.groupIDs.isEmpty)
+        XCTAssertEqual(try context.fetch(FetchDescriptor<BusinessCard>()).count, 1)
+        XCTAssertTrue(try context.fetch(FetchDescriptor<CardGroup>()).isEmpty)
+    }
+
+    func testSmartGroupFiltersUsePersistedFields() {
+        let now = Date(timeIntervalSince1970: 10_000_000)
+        let groupID = UUID()
+        let grouped = BusinessCard(
+            draft: .fixture,
+            groupIDs: [groupID],
+            createdAt: now,
+            updatedAt: now
+        )
+        var minimalDraft = BusinessCardDraft.empty
+        minimalDraft.name = "旧名片"
+        let oldUngrouped = BusinessCard(
+            draft: minimalDraft,
+            createdAt: now.addingTimeInterval(-40 * 86_400),
+            updatedAt: now.addingTimeInterval(-40 * 86_400)
+        )
+
+        XCTAssertEqual(GroupCardFilter.cards([grouped, oldUngrouped], matching: .custom(groupID), now: now).map(\.id), [grouped.id])
+        XCTAssertEqual(GroupCardFilter.cards([grouped, oldUngrouped], matching: .recentlyAdded, now: now).map(\.id), [grouped.id])
+        XCTAssertEqual(GroupCardFilter.cards([grouped, oldUngrouped], matching: .ungrouped, now: now).map(\.id), [oldUngrouped.id])
+        XCTAssertEqual(GroupCardFilter.cards([grouped, oldUngrouped], matching: .byJob, now: now).map(\.id), [grouped.id])
+        XCTAssertEqual(GroupCardFilter.cards([grouped, oldUngrouped], matching: .byCity, now: now).map(\.id), [grouped.id])
+    }
+
     private func makeTextImage(lines: [String], fontName: String = "HelveticaNeue-Bold") -> Data {
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: 1400, height: 800))
         return renderer.pngData { context in

@@ -81,11 +81,43 @@ final class CamCardReplicaUITests: XCTestCase {
         XCTAssertTrue(element("screen.cards").waitForExistence(timeout: 3))
         XCTAssertEqual(app.buttons["core.tab.cards"].value as? String, "已选中")
 
-        app.buttons["placeholder.cards.groups"].tap()
-        XCTAssertTrue(element("placeholder.sheet").waitForExistence(timeout: 2))
-        app.buttons["placeholder.close"].tap()
+        app.buttons["core.cards.groups"].tap()
+        XCTAssertTrue(element("screen.groups").waitForExistence(timeout: 2))
+        app.buttons["core.groups.back"].tap()
         XCTAssertTrue(element("screen.cards").exists)
         XCTAssertEqual(app.buttons["core.tab.cards"].value as? String, "已选中")
+    }
+
+    func testSavedCardCanBeAssignedToACreatedGroupAndOpenedFromIt() {
+        login()
+        app.buttons["core.tab.capture"].tap()
+        XCTAssertTrue(element("screen.capture").waitForExistence(timeout: 3))
+        app.buttons["core.capture.shutter"].tap()
+        XCTAssertTrue(element("screen.review").waitForExistence(timeout: 3))
+        app.buttons["core.review.save"].tap()
+        XCTAssertTrue(element("screen.result").waitForExistence(timeout: 5))
+
+        app.buttons["core.result.group"].tap()
+        XCTAssertTrue(element("screen.groupAssignment").waitForExistence(timeout: 3))
+        app.buttons["core.groupAssignment.new"].tap()
+        let nameField = app.alerts["新建分组"].textFields.firstMatch
+        XCTAssertTrue(nameField.waitForExistence(timeout: 2))
+        nameField.typeText("课程同学")
+        app.alerts["新建分组"].buttons.matching(identifier: "core.groupAssignment.create").firstMatch.tap()
+        app.buttons["core.groupAssignment.done"].tap()
+        XCTAssertTrue(element("screen.result").waitForExistence(timeout: 3))
+
+        app.buttons["core.result.returnCards"].tap()
+        XCTAssertTrue(element("screen.cards").waitForExistence(timeout: 3))
+        app.buttons["core.cards.groups"].tap()
+        XCTAssertTrue(element("screen.groups").waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["课程同学(1)"].waitForExistence(timeout: 2))
+        app.staticTexts["课程同学(1)"].tap()
+        XCTAssertTrue(element("screen.groupCards").waitForExistence(timeout: 3))
+        XCTAssertTrue(groupedCardButton.waitForExistence(timeout: 2))
+        groupedCardButton.tap()
+        XCTAssertTrue(element("screen.detail").waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["课程同学"].waitForExistence(timeout: 2))
     }
 
     func testSavedCardPersistsCanBeSearchedEditedAndDeleted() {
@@ -155,6 +187,12 @@ final class CamCardReplicaUITests: XCTestCase {
     private var savedCardButton: XCUIElement {
         app.buttons.matching(
             NSPredicate(format: "identifier BEGINSWITH 'core.cards.savedCard.'")
+        ).firstMatch
+    }
+
+    private var groupedCardButton: XCUIElement {
+        app.buttons.matching(
+            NSPredicate(format: "identifier BEGINSWITH 'core.groupCards.card.'")
         ).firstMatch
     }
 }

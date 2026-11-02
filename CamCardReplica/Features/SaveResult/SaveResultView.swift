@@ -141,6 +141,10 @@ struct SaveResultView: View {
 
     private func actionButton(_ title: String, _ symbol: String, _ id: String) -> some View {
         FeatureIconButton(title: title, symbol: symbol) {
+            if id == "group", let cardID = importSession.savedCardID {
+                navigation.push(.groupAssignment(cardID))
+                return
+            }
             if id == "note" {
                 navigation.push(.review)
                 return
@@ -153,7 +157,7 @@ struct SaveResultView: View {
                 symbol: symbol
             )
         }
-        .accessibilityIdentifier("placeholder.result.\(id)")
+        .accessibilityIdentifier(id == "group" ? "core.result.group" : "placeholder.result.\(id)")
     }
 
     private var bottomActions: some View {
@@ -213,7 +217,7 @@ struct SaveResultView: View {
     }
     .environment(AppNavigationModel(initialStage: .main))
     .environment(CardImportSession())
-    .modelContainer(for: BusinessCard.self, inMemory: true)
+    .modelContainer(for: [BusinessCard.self, CardGroup.self], inMemory: true)
 }
 
 #Preview("超大动态字体") {
@@ -223,5 +227,5 @@ struct SaveResultView: View {
     .environment(AppNavigationModel(initialStage: .main))
     .environment(CardImportSession())
     .environment(\.dynamicTypeSize, .accessibility2)
-    .modelContainer(for: BusinessCard.self, inMemory: true)
+    .modelContainer(for: [BusinessCard.self, CardGroup.self], inMemory: true)
 }

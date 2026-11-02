@@ -94,7 +94,12 @@ struct CardListView: View {
 
     private func quickAction(_ title: String, _ symbol: String, _ color: Color, _ id: String, badge: String? = nil) -> some View {
         Button {
-            placeholder(id, title, symbol: symbol)
+            if id == "groups" {
+                searchIsFocused = false
+                navigation.push(.groupManagement)
+            } else {
+                placeholder(id, title, symbol: symbol)
+            }
         } label: {
             VStack(spacing: 10) {
                 ZStack(alignment: .topTrailing) {
@@ -122,7 +127,7 @@ struct CardListView: View {
             .background(.white, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         }
         .buttonStyle(.plain)
-        .accessibilityIdentifier("placeholder.cards.\(id)")
+        .accessibilityIdentifier(id == "groups" ? "core.cards.groups" : "placeholder.cards.\(id)")
     }
 
     private var assistantInvite: some View {
@@ -326,5 +331,5 @@ struct CardListView: View {
 #Preview {
     CardListView()
         .environment(AppNavigationModel(initialStage: .main))
-        .modelContainer(for: BusinessCard.self, inMemory: true)
+        .modelContainer(for: [BusinessCard.self, CardGroup.self], inMemory: true)
 }

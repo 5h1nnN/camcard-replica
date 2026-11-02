@@ -9,6 +9,7 @@ struct CardDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Query private var cards: [BusinessCard]
+    @Query(sort: \CardGroup.sortOrder) private var groups: [CardGroup]
     @State private var demoIsFavorite = false
     @State private var showsDeleteConfirmation = false
     @State private var operationError: String?
@@ -189,7 +190,7 @@ struct CardDetailView: View {
 
     private var metadataSection: some View {
         VStack(spacing: 0) {
-            metadataButton("未分组", "person.2.fill", "group")
+            groupMetadataButton
             Divider().padding(.leading, 48)
             Button(action: beginEditing) {
                 HStack(spacing: 16) {
@@ -213,17 +214,22 @@ struct CardDetailView: View {
         .background(.white)
     }
 
-    private func metadataButton(_ title: String, _ symbol: String, _ id: String) -> some View {
+    private var groupMetadataButton: some View {
         Button {
-            placeholder(id, title, symbol)
+            guard let card = storedCard else {
+                placeholder("group", "分组", "person.2.fill")
+                return
+            }
+            navigation.push(.groupAssignment(card.id))
         } label: {
             HStack(spacing: 16) {
-                Image(systemName: symbol)
+                Image(systemName: "person.2.fill")
                     .foregroundStyle(.secondary)
                     .frame(width: 28)
-                Text(title)
+                Text(groupSummary)
                     .font(.subheadline)
                     .foregroundStyle(AppColors.textPrimary)
+                    .lineLimit(2)
                 Spacer()
                 Image(systemName: "chevron.right")
                     .font(.caption)
@@ -232,7 +238,7 @@ struct CardDetailView: View {
             .padding(16)
         }
         .buttonStyle(.plain)
-        .accessibilityIdentifier("placeholder.detail.\(id)")
+        .accessibilityIdentifier(storedCard == nil ? "placeholder.detail.group" : "core.detail.group")
     }
 
     private var contactSection: some View {
@@ -376,6 +382,12 @@ struct CardDetailView: View {
         storedCard?.draft ?? .fixture
     }
 
+    private var groupSummary: String {
+        guard let card = storedCard else { return "未分组" }
+        let names = CardGroupStore.groupNames(for: card, groups: groups)
+        return names.isEmpty ? "未分组" : names.joined(separator: "、")
+    }
+
     private var isFavorite: Bool {
         storedCard?.isFavorite ?? demoIsFavorite
     }
@@ -432,7 +444,7 @@ struct CardDetailView: View {
     }
     .environment(AppNavigationModel(initialStage: .main))
     .environment(CardImportSession())
-    .modelContainer(for: BusinessCard.self, inMemory: true)
+    .modelContainer(for: [BusinessCard.self, CardGroup.self], inMemory: true)
 }
 
 #Preview("超大动态字体") {
@@ -442,5 +454,5 @@ struct CardDetailView: View {
     .environment(AppNavigationModel(initialStage: .main))
     .environment(CardImportSession())
     .environment(\.dynamicTypeSize, .accessibility2)
-    .modelContainer(for: BusinessCard.self, inMemory: true)
+    .modelContainer(for: [BusinessCard.self, CardGroup.self], inMemory: true)
 }

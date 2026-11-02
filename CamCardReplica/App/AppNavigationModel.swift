@@ -21,6 +21,18 @@ enum AppRoute: Hashable {
     case review
     case saveResult
     case cardDetail(UUID)
+    case groupManagement
+    case groupAssignment(UUID)
+    case groupCards(CardGroupFilter)
+}
+
+enum CardGroupFilter: Hashable {
+    case custom(UUID)
+    case recent30Days
+    case recentlyAdded
+    case ungrouped
+    case byJob
+    case byCity
 }
 
 struct PlaceholderAction: Identifiable, Hashable {

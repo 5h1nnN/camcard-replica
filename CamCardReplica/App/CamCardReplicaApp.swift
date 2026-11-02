@@ -14,13 +14,17 @@ struct CamCardReplicaApp: App {
 
     init() {
         do {
-            modelContainer = try ModelContainer(for: BusinessCard.self)
+            modelContainer = try ModelContainer(for: BusinessCard.self, CardGroup.self)
 
             if ProcessInfo.processInfo.arguments.contains("-ResetUITestStore") {
                 let context = ModelContext(modelContainer)
                 let cards = try context.fetch(FetchDescriptor<BusinessCard>())
                 for card in cards {
                     context.delete(card)
+                }
+                let groups = try context.fetch(FetchDescriptor<CardGroup>())
+                for group in groups {
+                    context.delete(group)
                 }
                 try context.save()
                 try CardImageStore.live.removeAllImages()

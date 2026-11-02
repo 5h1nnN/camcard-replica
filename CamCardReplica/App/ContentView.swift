@@ -59,6 +59,12 @@ struct ContentView: View {
             SaveResultView()
         case let .cardDetail(id):
             CardDetailView(cardID: id)
+        case .groupManagement:
+            GroupManagementView()
+        case let .groupAssignment(cardID):
+            GroupAssignmentView(cardID: cardID)
+        case let .groupCards(filter):
+            GroupCardsView(filter: filter)
         }
     }
 }
@@ -66,5 +72,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .preferredColorScheme(.light)
-        .modelContainer(for: BusinessCard.self, inMemory: true)
+        .modelContainer(for: [BusinessCard.self, CardGroup.self], inMemory: true)
 }

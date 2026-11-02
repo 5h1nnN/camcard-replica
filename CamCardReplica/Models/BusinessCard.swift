@@ -16,6 +16,7 @@ final class BusinessCard {
     var address: String
     var notes: String
     var isFavorite: Bool
+    var groupIDs: [UUID] = []
     var createdAt: Date
     var updatedAt: Date
 
@@ -24,6 +25,7 @@ final class BusinessCard {
         originalImagePath: String? = nil,
         draft: BusinessCardDraft,
         isFavorite: Bool = false,
+        groupIDs: [UUID] = [],
         createdAt: Date = .now,
         updatedAt: Date = .now
     ) {
@@ -40,6 +42,7 @@ final class BusinessCard {
         self.address = draft.address
         self.notes = draft.notes
         self.isFavorite = isFavorite
+        self.groupIDs = groupIDs
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
