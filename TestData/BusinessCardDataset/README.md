@@ -12,6 +12,8 @@ This folder contains 30 deterministic, synthetic business-card images for OCR, f
 - `contact_sheet.png`: compact visual overview.
 - `checksums.sha256`: SHA-256 checksums for reproducibility.
 
+The app-level benchmark is implemented in `CamCardReplicaTests/BusinessCardDatasetTests.swift`. The dataset is copied only into the unit-test bundle, not the shipping app. Each run exercises perspective correction, Vision OCR, and field parsing, then attaches a per-image JSON report to the xcresult. The latest summarized result is documented in `ProjectDocs/BusinessCardDatasetBenchmark.md`.
+
 ## Coverage
 
 - Simplified Chinese, English, and bilingual cards.

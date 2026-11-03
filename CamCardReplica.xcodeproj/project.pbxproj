@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A00000000000000000000017 /* TestData/BusinessCardDataset in Resources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000018 /* TestData/BusinessCardDataset */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		A0000000000000000000000D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		2B7DA77C3092C8D700C9C0A8 /* CamCardReplica.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CamCardReplica.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A00000000000000000000001 /* CamCardReplicaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CamCardReplicaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A00000000000000000000002 /* CamCardReplicaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CamCardReplicaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A00000000000000000000018 /* TestData/BusinessCardDataset */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TestData/BusinessCardDataset; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -78,6 +83,7 @@
 				2B7DA77E3092C8D700C9C0A8 /* CamCardReplica */,
 				A00000000000000000000003 /* CamCardReplicaTests */,
 				A00000000000000000000004 /* CamCardReplicaUITests */,
+				A00000000000000000000018 /* TestData/BusinessCardDataset */,
 				2B7DA77D3092C8D700C9C0A8 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -219,6 +225,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A00000000000000000000017 /* TestData/BusinessCardDataset in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
