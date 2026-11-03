@@ -124,6 +124,84 @@ final class CamCardReplicaTests: XCTestCase {
         XCTAssertTrue(BusinessCard(draft: draft).matches("0103"))
     }
 
+    func testBilingualLabelsAreRemovedAndExpandedBusinessTermsAreClassified() {
+        let draft = BusinessCardFieldParser.parse(
+            """
+            Mia Zhou 周米娅
+            UX Designer 体验设计师
+            Mosaic 示例研究所
+            手机 / Mobile: +86 138 0000 0026
+            座机 / Office: 021-5555-1026
+            传真 / Fax: 021-5556-1026
+            邮箱 / Email: user26@example.com
+            网站 / Web: www.example.com/card-26
+            地址 / Address: 示例市创新路 36 号
+            """
+        )
+
+        XCTAssertEqual(draft.name, "Mia Zhou 周米娅")
+        XCTAssertEqual(draft.company, "Mosaic 示例研究所")
+        XCTAssertEqual(draft.jobTitle, "UX Designer 体验设计师")
+        XCTAssertEqual(draft.mobilePhone, "+86 138 0000 0026")
+        XCTAssertEqual(draft.officePhone, "021-5555-1026")
+        XCTAssertEqual(draft.faxPhone, "021-5556-1026")
+        XCTAssertEqual(draft.address, "示例市创新路 36 号")
+    }
+
+    func testCompanyRoomSuffixAndMobileRoleAreNotContactOrAddressLines() {
+        let draft = BusinessCardFieldParser.parse(
+            """
+            Noah Xu
+            徐诺
+            Mobile Engineer
+            Nimbus 测试工作室
+            Mobile: +1 415 555 1027
+            Address: 127 Example Avenue, Test City
+            """
+        )
+
+        XCTAssertEqual(draft.name, "Noah Xu 徐诺")
+        XCTAssertEqual(draft.company, "Nimbus 测试工作室")
+        XCTAssertEqual(draft.jobTitle, "Mobile Engineer")
+        XCTAssertEqual(draft.mobilePhone, "+1 415 555 1027")
+        XCTAssertEqual(draft.address, "127 Example Avenue, Test City")
+    }
+
+    func testSingleLineBilingualNameRemainsAvailable() {
+        let draft = BusinessCardFieldParser.parse(
+            """
+            陆川 LU CHUAN
+            创意总监 Creative Director
+            北岸 Example Design
+            手机 / Mobile: +86 138 0000 0024
+            地址 / Address: 示例市创新路 34 号
+            """
+        )
+
+        XCTAssertEqual(draft.name, "陆川 LU CHUAN")
+        XCTAssertEqual(draft.company, "北岸 Example Design")
+    }
+
+    func testRecognitionQualityPrefersCompleteContactText() {
+        let partial = """
+        Avery Stone
+        Product Designer
+        Northstar Example Labs
+        """
+        let complete = partial + """
+
+        Mobile: +1 415 555 1011
+        Email: user11@example.com
+        Website: www.example.com/card-11
+        Address: 111 Example Avenue, Test City
+        """
+
+        XCTAssertGreaterThan(
+            BusinessCardRecognitionPipeline.recognitionQualityScore(complete),
+            BusinessCardRecognitionPipeline.recognitionQualityScore(partial)
+        )
+    }
+
     func testRecognizedTextIsSortedByRowsThenColumns() {
         let lines = [
             RecognizedTextLine(text: "right", boundingBox: CGRect(x: 0.6, y: 0.8, width: 0.2, height: 0.1)),

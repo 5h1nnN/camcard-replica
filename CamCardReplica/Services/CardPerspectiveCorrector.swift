@@ -104,22 +104,77 @@ enum CardPerspectiveCorrector {
 
     nonisolated private static func detectQuadrilateral(in image: CIImage) throws -> CardQuadrilateral? {
         let request = VNDetectRectanglesRequest()
-        request.maximumObservations = 1
+        request.maximumObservations = 8
         request.minimumConfidence = 0.6
-        request.minimumAspectRatio = 0.3
+        request.minimumAspectRatio = 0.35
         request.maximumAspectRatio = 1.0
         request.minimumSize = 0.18
         request.quadratureTolerance = 35
 
         let handler = VNImageRequestHandler(ciImage: image, orientation: .up)
         try handler.perform([request])
-        guard let rectangle = request.results?.first else { return nil }
+        let candidates = request.results ?? []
+        let rectangle = candidates
+            .filter(isPlausibleBusinessCard)
+            .max(by: { candidateScore($0) < candidateScore($1) })
+            ?? candidates
+                .filter { (0.35...0.88).contains(quadrilateralArea($0)) }
+                .max(by: { quadrilateralArea($0) < quadrilateralArea($1) })
+        guard let rectangle else {
+            return nil
+        }
         return CardQuadrilateral(
             topLeft: rectangle.topLeft,
             topRight: rectangle.topRight,
             bottomRight: rectangle.bottomRight,
             bottomLeft: rectangle.bottomLeft
         )
+    }
+
+    nonisolated private static func isPlausibleBusinessCard(_ rectangle: VNRectangleObservation) -> Bool {
+        let area = quadrilateralArea(rectangle)
+        let ratio = longToShortAspectRatio(rectangle)
+        // Strong perspective can make a landscape card approach a square in
+        // the source image, so area is the stronger guard for low ratios.
+        return (0.24...0.88).contains(area) && (1.1...2.35).contains(ratio)
+    }
+
+    nonisolated private static func candidateScore(_ rectangle: VNRectangleObservation) -> CGFloat {
+        let area = quadrilateralArea(rectangle)
+        let ratio = longToShortAspectRatio(rectangle)
+        let ratioPenalty = abs(ratio - 1.75)
+        return area * 5 + CGFloat(rectangle.confidence) * 2 - ratioPenalty
+    }
+
+    nonisolated private static func quadrilateralArea(_ rectangle: VNRectangleObservation) -> CGFloat {
+        let points = [
+            rectangle.topLeft,
+            rectangle.topRight,
+            rectangle.bottomRight,
+            rectangle.bottomLeft
+        ]
+        let doubledArea = zip(points, points.dropFirst() + [points[0]]).reduce(CGFloat.zero) { result, pair in
+            result + pair.0.x * pair.1.y - pair.1.x * pair.0.y
+        }
+        return abs(doubledArea) / 2
+    }
+
+    nonisolated private static func longToShortAspectRatio(_ rectangle: VNRectangleObservation) -> CGFloat {
+        let horizontal = (
+            distance(rectangle.topLeft, rectangle.topRight) +
+            distance(rectangle.bottomLeft, rectangle.bottomRight)
+        ) / 2
+        let vertical = (
+            distance(rectangle.topLeft, rectangle.bottomLeft) +
+            distance(rectangle.topRight, rectangle.bottomRight)
+        ) / 2
+        let short = min(horizontal, vertical)
+        guard short > 0 else { return .infinity }
+        return max(horizontal, vertical) / short
+    }
+
+    nonisolated private static func distance(_ lhs: CGPoint, _ rhs: CGPoint) -> CGFloat {
+        hypot(lhs.x - rhs.x, lhs.y - rhs.y)
     }
 
     nonisolated private static func imagePoint(_ normalizedPoint: CGPoint, in extent: CGRect) -> CGPoint {

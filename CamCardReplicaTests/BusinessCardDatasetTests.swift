@@ -25,16 +25,18 @@ final class BusinessCardDatasetTests: XCTestCase {
             var rawText = ""
             var draft = BusinessCardDraft.empty
             var didCorrectPerspective = false
-            var failure: String?
+            var selectedSource = CardRecognitionImageSource.original.rawValue
+            var originalRawText = ""
+            var correctedRawText = ""
+            let failure: String? = nil
 
-            do {
-                let correction = try await CardPerspectiveCorrector.correct(imageData)
-                didCorrectPerspective = correction.didCorrectPerspective
-                rawText = try await VisionTextRecognizer.recognizeText(in: correction.imageData)
-                draft = BusinessCardFieldParser.parse(rawText)
-            } catch {
-                failure = String(describing: error)
-            }
+            let recognition = await BusinessCardRecognitionPipeline.process(imageData)
+            didCorrectPerspective = recognition.didApplyPerspectiveCorrection
+            selectedSource = recognition.selectedSource.rawValue
+            originalRawText = recognition.originalRawText
+            correctedRawText = recognition.correctedRawText
+            rawText = recognition.rawText
+            draft = recognition.draft
 
             let comparisons = Dictionary(uniqueKeysWithValues: Self.testedFields.map { key in
                 let expected = record.fields.value(for: key)
@@ -57,8 +59,11 @@ final class BusinessCardDatasetTests: XCTestCase {
                 difficulty: record.difficulty,
                 scenario: record.scenario,
                 recognizedText: rawText,
+                originalRecognizedText: originalRawText,
+                correctedRecognizedText: correctedRawText,
                 recognitionSucceeded: !BusinessCardFieldParser.normalizedLines(in: rawText).isEmpty,
                 didCorrectPerspective: didCorrectPerspective,
+                selectedSource: selectedSource,
                 durationMilliseconds: Int((CFAbsoluteTimeGetCurrent() - start) * 1_000),
                 error: failure,
                 fields: comparisons
@@ -285,8 +290,11 @@ private struct CaseResult: Encodable {
     let difficulty: String
     let scenario: String
     let recognizedText: String
+    let originalRecognizedText: String
+    let correctedRecognizedText: String
     let recognitionSucceeded: Bool
     let didCorrectPerspective: Bool
+    let selectedSource: String
     let durationMilliseconds: Int
     let error: String?
     var fields: [String: FieldComparison]

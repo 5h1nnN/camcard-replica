@@ -65,11 +65,7 @@ final class CardImportSession {
                 )
             }
 
-            return await processImageData(
-                data,
-                previousDraft: previousDraft,
-                previousImageData: previousImageData
-            )
+            return await processImageData(data)
         } catch {
             return fail(
                 error.localizedDescription,
@@ -89,11 +85,7 @@ final class CardImportSession {
                 imageData: previousImageData
             )
         }
-        return await processImageData(
-            data,
-            previousDraft: previousDraft,
-            previousImageData: previousImageData
-        )
+        return await processImageData(data)
     }
 
     func continueWithManualEntry() {
@@ -129,38 +121,22 @@ final class CardImportSession {
         state = .ready
     }
 
-    private func processImageData(
-        _ data: Data,
-        previousDraft: BusinessCardDraft,
-        previousImageData: Data?
-    ) async -> CardImportOutcome {
+    private func processImageData(_ data: Data) async -> CardImportOutcome {
         state = .detectingEdges
         isManualEntry = false
-
-        do {
-            let correction = try await CardPerspectiveCorrector.correct(data)
-            imageData = correction.imageData
-            didApplyPerspectiveCorrection = correction.didCorrectPerspective
-
-            state = .recognizing
-            let rawText = try await VisionTextRecognizer.recognizeText(in: correction.imageData)
-            guard !BusinessCardFieldParser.normalizedLines(in: rawText).isEmpty else {
-                draft = .empty
-                state = .noText
-                return .noText
-            }
-
-            draft = BusinessCardFieldParser.parse(rawText)
-            state = .ready
-            return .ready
-        } catch {
-            didApplyPerspectiveCorrection = false
-            return fail(
-                error.localizedDescription,
-                restoring: previousDraft,
-                imageData: previousImageData
-            )
+        state = .recognizing
+        let recognition = await BusinessCardRecognitionPipeline.process(data)
+        imageData = recognition.imageData
+        didApplyPerspectiveCorrection = recognition.didApplyPerspectiveCorrection
+        guard !BusinessCardFieldParser.normalizedLines(in: recognition.rawText).isEmpty else {
+            draft = .empty
+            state = .noText
+            return .noText
         }
+
+        draft = recognition.draft
+        state = .ready
+        return .ready
     }
 
     private func fail(
