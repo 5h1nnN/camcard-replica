@@ -2,7 +2,7 @@
 
 测试时间：2026-11-03
 
-设备：iPhone 17 Pro 模拟器，iOS 26.4（仅使用这一台模拟器）
+设备：iPhone 17 Pro 模拟器，iOS 26.4
 
 测试集：`TestData/BusinessCardDataset` v1.0.0
 
