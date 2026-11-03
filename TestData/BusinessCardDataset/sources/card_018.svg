@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="1050" viewBox="0 0 1050 1050">
+<g transform="translate(0 225)">
+<rect width="1050" height="600" rx="26" fill="#ffffff"/>
+<rect x="0" y="0" width="1050" height="18" fill="#d39a22"/>
+<rect x="505" y="82" width="2" height="430" fill="#d39a22" opacity="0.35"/>
+<text x="64" y="120" fill="#10243e" font-size="46" font-weight="700" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Cameron Wu</text>
+<text x="64" y="174" fill="#526170" font-size="24" font-weight="500" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Product Lead</text>
+<text x="64" y="222" fill="#d39a22" font-size="27" font-weight="650" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Paper Kite Mobile</text>
+<text x="550" y="112" fill="#526170" font-size="21" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Mobile: +1 415 555 1018</text>
+<text x="550" y="182" fill="#526170" font-size="21" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Office: +1 212 555 2018</text>
+<text x="550" y="252" fill="#526170" font-size="21" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Fax: +1 646 555 3018</text>
+<text x="550" y="322" fill="#526170" font-size="21" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Email: user18@example.com</text>
+<text x="550" y="392" fill="#526170" font-size="21" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Website: www.example.com/card-18</text>
+<text x="550" y="462" fill="#526170" font-size="21" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Address: 118 Example Avenue, Test City</text>
+</g>
+</svg>

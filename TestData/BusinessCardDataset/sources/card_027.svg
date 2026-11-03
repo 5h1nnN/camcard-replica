@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="1050" viewBox="0 0 1050 1050">
+<g transform="translate(0 225)">
+<rect width="1050" height="600" rx="26" fill="#fffdf8"/>
+<circle cx="525" cy="98" r="38" fill="#1f9d79"/>
+<rect x="365" y="184" width="320" height="4" fill="#1f9d79"/>
+<text x="525" y="152" fill="#10243e" font-size="48" font-weight="700" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Noah Xu 徐诺</text>
+<text x="525" y="228" fill="#526170" font-size="25" font-weight="500" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Developer 开发工程师</text>
+<text x="525" y="270" fill="#1f9d79" font-size="26" font-weight="600" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Nimbus 测试工作室</text>
+<text x="525" y="342" fill="#526170" font-size="20" font-weight="400" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">手机 / Mobile: +86 138 0000 0027</text>
+<text x="525" y="380" fill="#526170" font-size="20" font-weight="400" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">座机 / Office: 021-5555-1027</text>
+<text x="525" y="418" fill="#526170" font-size="20" font-weight="400" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">传真 / Fax: 021-5556-1027</text>
+<text x="525" y="456" fill="#526170" font-size="20" font-weight="400" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">邮箱 / Email: user27@example.com</text>
+<text x="525" y="494" fill="#526170" font-size="20" font-weight="400" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">网站 / Web: www.example.com/card-27</text>
+<text x="525" y="532" fill="#526170" font-size="20" font-weight="400" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">地址 / Address: 示例市创新路 37 号</text>
+</g>
+</svg>

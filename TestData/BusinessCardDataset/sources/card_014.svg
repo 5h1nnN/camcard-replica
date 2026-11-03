@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="1050" viewBox="0 0 1050 1050">
+<g transform="translate(0 225)">
+<rect width="1050" height="600" rx="26" fill="#f7fbff"/>
+<rect x="0" y="0" width="390" height="600" fill="#e06a43"/>
+<path d="M390 0 L470 0 L390 600 Z" fill="#ffffff" opacity="0.2"/>
+<text x="58" y="138" fill="#ffffff" font-size="48" font-weight="700" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif" textLength="305" lengthAdjust="spacingAndGlyphs">Taylor Quinn</text>
+<text x="58" y="242" fill="#ffffff" font-size="25" font-weight="600" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Blue Orbit Design</text>
+<text x="455" y="132" fill="#10243e" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Mobile: +1 415 555 1014</text>
+<text x="455" y="200" fill="#10243e" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Office: +1 212 555 2014</text>
+<text x="455" y="268" fill="#10243e" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Email: user14@example.com</text>
+<text x="455" y="336" fill="#10243e" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Website: www.example.com/card-14</text>
+<text x="455" y="404" fill="#10243e" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Address: 114 Example Avenue, Test City</text>
+</g>
+</svg>

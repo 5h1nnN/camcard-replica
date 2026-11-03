@@ -1,0 +1,225 @@
+﻿id,image,sourceSvg,language,layout,difficulty,scenario,disturbance,name,company,jobTitle,mobilePhone,officePhone,faxPhone,email,website,address,notes,missingFields,ocrRawText
+card_001,images/card_001.png,sources/card_001.svg,zh,layout_1,easy,clean_light,"{""type"":""none""}",林晓,星河示例科技,产品经理,+86 138 0000 0001,,021-5556-1001,user01@example.com,www.example.com/card-01,示例市创新路 11 号,,officePhone,"林晓
+产品经理
+星河示例科技
+手机: +86 138 0000 0001
+传真: 021-5556-1001
+邮箱: user01@example.com
+网站: www.example.com/card-01
+地址: 示例市创新路 11 号"
+card_002,images/card_002.png,sources/card_002.svg,zh,layout_2,easy,clean_split,"{""type"":""none""}",陈宇,远山创意实验室,iOS 工程师,+86 138 0000 0002,021-5555-1002,,user02@example.com,www.example.com/card-02,示例市创新路 12 号,,faxPhone,"陈宇
+iOS 工程师
+远山创意实验室
+手机: +86 138 0000 0002
+座机: 021-5555-1002
+邮箱: user02@example.com
+网站: www.example.com/card-02
+地址: 示例市创新路 12 号"
+card_003,images/card_003.png,sources/card_003.svg,zh,layout_3,easy,clean_center,"{""type"":""none""}",周宁,蓝桥产品工作室,视觉设计师,+86 138 0000 0003,021-5555-1003,021-5556-1003,user03@example.com,www.example.com/card-03,示例市创新路 13 号,,,"周宁
+视觉设计师
+蓝桥产品工作室
+手机: +86 138 0000 0003
+座机: 021-5555-1003
+传真: 021-5556-1003
+邮箱: user03@example.com
+网站: www.example.com/card-03
+地址: 示例市创新路 13 号"
+card_004,images/card_004.png,sources/card_004.svg,zh,layout_4,easy,clean_missing_fields,"{""type"":""none""}",苏然,,,+86 138 0000 0004,,,user04@example.com,,示例市创新路 14 号,,company;jobTitle;officePhone;faxPhone;website,"苏然
+手机: +86 138 0000 0004
+邮箱: user04@example.com
+地址: 示例市创新路 14 号"
+card_005,images/card_005.png,sources/card_005.svg,zh,layout_5,easy,clean_dark_card,"{""type"":""none""}",王澈,云帆设计事务所,客户顾问,+86 138 0000 0005,021-5555-1005,021-5556-1005,user05@example.com,www.example.com/card-05,,,address,"王澈
+客户顾问
+云帆设计事务所
+手机: +86 138 0000 0005
+座机: 021-5555-1005
+传真: 021-5556-1005
+邮箱: user05@example.com
+网站: www.example.com/card-05"
+card_006,images/card_006.png,sources/card_006.svg,zh,layout_6,easy,clean_bilingual,"{""type"":""none""}",李安,松林移动实验室,移动端开发工程师,+86 138 0000 0006,021-5555-1006,,user06@example.com,www.example.com/card-06,示例市创新路 16 号,,faxPhone,"李安
+移动端开发工程师
+松林移动实验室
+手机: +86 138 0000 0006
+座机: 021-5555-1006
+邮箱: user06@example.com
+网站: www.example.com/card-06
+地址: 示例市创新路 16 号"
+card_007,images/card_007.png,sources/card_007.svg,zh,layout_1,medium,rotate_minus_3,"{""type"":""rotation"",""degrees"":-3}",赵晨,白塔交互工作室,交互设计师,+86 138 0000 0007,,,user07@example.com,www.example.com/card-07,示例市创新路 17 号,,officePhone;faxPhone,"赵晨
+交互设计师
+白塔交互工作室
+手机: +86 138 0000 0007
+邮箱: user07@example.com
+网站: www.example.com/card-07
+地址: 示例市创新路 17 号"
+card_008,images/card_008.png,sources/card_008.svg,zh,layout_2,medium,rotate_plus_5,"{""type"":""rotation"",""degrees"":5}",何静,微光咨询,研究员,+86 138 0000 0008,021-5555-1008,021-5556-1008,user08@example.com,,示例市创新路 18 号,,website,"何静
+研究员
+微光咨询
+手机: +86 138 0000 0008
+座机: 021-5555-1008
+传真: 021-5556-1008
+邮箱: user08@example.com
+地址: 示例市创新路 18 号"
+card_009,images/card_009.png,sources/card_009.svg,zh,layout_3,medium,rotate_minus_8,"{""type"":""rotation"",""degrees"":-8}",孙悦,方舟示例网络,项目主管,+86 138 0000 0009,021-5555-1009,,,,示例市创新路 19 号,,faxPhone;email;website,"孙悦
+项目主管
+方舟示例网络
+手机: +86 138 0000 0009
+座机: 021-5555-1009
+地址: 示例市创新路 19 号"
+card_010,images/card_010.png,sources/card_010.svg,zh,layout_4,medium,rotate_plus_10,"{""type"":""rotation"",""degrees"":10}",郑航,新叶创新中心,技术总监,+86 138 0000 0010,021-5555-1010,021-5556-1010,user10@example.com,www.example.com/card-10,,,address,"郑航
+技术总监
+新叶创新中心
+手机: +86 138 0000 0010
+座机: 021-5555-1010
+传真: 021-5556-1010
+邮箱: user10@example.com
+网站: www.example.com/card-10"
+card_011,images/card_011.png,sources/card_011.svg,en,layout_5,hard,rotate_90,"{""type"":""rotation"",""degrees"":90}",Avery Stone,Northstar Example Labs,Product Designer,+1 415 555 1011,+1 212 555 2011,,user11@example.com,www.example.com/card-11,"111 Example Avenue, Test City",,faxPhone,"Avery Stone
+Product Designer
+Northstar Example Labs
+Mobile: +1 415 555 1011
+Office: +1 212 555 2011
+Email: user11@example.com
+Website: www.example.com/card-11
+Address: 111 Example Avenue, Test City"
+card_012,images/card_012.png,sources/card_012.svg,en,layout_6,hard,rotate_180,"{""type"":""rotation"",""degrees"":180}",Jordan Lee,Harborline Studio,Engineering Manager,+1 415 555 1012,+1 212 555 2012,+1 646 555 3012,user12@example.com,,"112 Example Avenue, Test City",,website,"Jordan Lee
+Engineering Manager
+Harborline Studio
+Mobile: +1 415 555 1012
+Office: +1 212 555 2012
+Fax: +1 646 555 3012
+Email: user12@example.com
+Address: 112 Example Avenue, Test City"
+card_013,images/card_013.png,sources/card_013.svg,en,layout_1,medium,perspective_left,"{""type"":""perspective"",""preset"":""left""}",Morgan Reed,Cedar Test Systems,Research Analyst,+1 415 555 1013,,,user13@example.com,www.example.com/card-13,"113 Example Avenue, Test City",,officePhone;faxPhone,"Morgan Reed
+Research Analyst
+Cedar Test Systems
+Mobile: +1 415 555 1013
+Email: user13@example.com
+Website: www.example.com/card-13
+Address: 113 Example Avenue, Test City"
+card_014,images/card_014.png,sources/card_014.svg,en,layout_2,medium,perspective_right,"{""type"":""perspective"",""preset"":""right""}",Taylor Quinn,Blue Orbit Design,,+1 415 555 1014,+1 212 555 2014,,user14@example.com,www.example.com/card-14,"114 Example Avenue, Test City",,jobTitle;faxPhone,"Taylor Quinn
+Blue Orbit Design
+Mobile: +1 415 555 1014
+Office: +1 212 555 2014
+Email: user14@example.com
+Website: www.example.com/card-14
+Address: 114 Example Avenue, Test City"
+card_015,images/card_015.png,sources/card_015.svg,en,layout_3,medium,perspective_top_narrow,"{""type"":""perspective"",""preset"":""top_narrow""}",Casey Park,Sample Peak Consulting,Solutions Consultant,+1 415 555 1015,+1 212 555 2015,+1 646 555 3015,user15@example.com,www.example.com/card-15,,,address,"Casey Park
+Solutions Consultant
+Sample Peak Consulting
+Mobile: +1 415 555 1015
+Office: +1 212 555 2015
+Fax: +1 646 555 3015
+Email: user15@example.com
+Website: www.example.com/card-15"
+card_016,images/card_016.png,sources/card_016.svg,en,layout_4,medium,perspective_bottom_narrow,"{""type"":""perspective"",""preset"":""bottom_narrow""}",Riley Chen,Riverbend Product Lab,Mobile Engineer,+1 415 555 1016,,,user16@example.com,,"116 Example Avenue, Test City",,officePhone;faxPhone;website,"Riley Chen
+Mobile Engineer
+Riverbend Product Lab
+Mobile: +1 415 555 1016
+Email: user16@example.com
+Address: 116 Example Avenue, Test City"
+card_017,images/card_017.png,sources/card_017.svg,en,layout_5,hard,perspective_keystone,"{""type"":""perspective"",""preset"":""keystone""}",Jamie Lin,Atlas Example Works,UX Researcher,+1 415 555 1017,+1 212 555 2017,,user17@example.com,www.example.com/card-17,"117 Example Avenue, Test City",,faxPhone,"Jamie Lin
+UX Researcher
+Atlas Example Works
+Mobile: +1 415 555 1017
+Office: +1 212 555 2017
+Email: user17@example.com
+Website: www.example.com/card-17
+Address: 117 Example Avenue, Test City"
+card_018,images/card_018.png,sources/card_018.svg,en,layout_6,hard,perspective_strong,"{""type"":""perspective"",""preset"":""strong""}",Cameron Wu,Paper Kite Mobile,Product Lead,+1 415 555 1018,+1 212 555 2018,+1 646 555 3018,user18@example.com,www.example.com/card-18,"118 Example Avenue, Test City",,,"Cameron Wu
+Product Lead
+Paper Kite Mobile
+Mobile: +1 415 555 1018
+Office: +1 212 555 2018
+Fax: +1 646 555 3018
+Email: user18@example.com
+Website: www.example.com/card-18
+Address: 118 Example Avenue, Test City"
+card_019,images/card_019.png,sources/card_019.svg,en,layout_1,medium,soft_shadow,"{""type"":""shadow"",""radius"":28,""offset"":[28,30]}",Robin Hale,,Account Director,+1 415 555 1019,,,user19@example.com,www.example.com/card-19,"119 Example Avenue, Test City",,company;officePhone;faxPhone,"Robin Hale
+Account Director
+Mobile: +1 415 555 1019
+Email: user19@example.com
+Website: www.example.com/card-19
+Address: 119 Example Avenue, Test City"
+card_020,images/card_020.png,sources/card_020.svg,en,layout_2,medium,hard_shadow,"{""type"":""shadow"",""radius"":8,""offset"":[38,42]}",Devon Shaw,Placeholder Ventures,Technical Advisor,+1 415 555 1020,+1 212 555 2020,+1 646 555 3020,user20@example.com,,,,website;address,"Devon Shaw
+Technical Advisor
+Placeholder Ventures
+Mobile: +1 415 555 1020
+Office: +1 212 555 2020
+Fax: +1 646 555 3020
+Email: user20@example.com"
+card_021,images/card_021.png,sources/card_021.svg,bilingual,layout_3,hard,low_contrast,"{""type"":""low_contrast"",""contrast"":0.42}",顾岚 GU LAN,山海 Example Lab,产品设计师 Product Designer,+86 138 0000 0021,021-5555-1021,,user21@example.com,www.example.com/card-21,示例市创新路 31 号,,faxPhone,"顾岚 GU LAN
+产品设计师 Product Designer
+山海 Example Lab
+手机: +86 138 0000 0021
+座机: 021-5555-1021
+邮箱: user21@example.com
+网站: www.example.com/card-21
+地址: 示例市创新路 31 号"
+card_022,images/card_022.png,sources/card_022.svg,bilingual,layout_4,medium,dark_scene,"{""type"":""dark_background""}",韩松 HAN SONG,青石 Sample Studio,软件工程师 Software Engineer,+86 138 0000 0022,,021-5556-1022,user22@example.com,www.example.com/card-22,示例市创新路 32 号,,officePhone,"韩松 HAN SONG
+软件工程师 Software Engineer
+青石 Sample Studio
+手机: +86 138 0000 0022
+传真: 021-5556-1022
+邮箱: user22@example.com
+网站: www.example.com/card-22
+地址: 示例市创新路 32 号"
+card_023,images/card_023.png,sources/card_023.svg,bilingual,layout_5,hard,occluded_corner,"{""type"":""occlusion"",""coverage"":""corner""}",沈月 SHEN YUE,光点 Test Works,研究顾问 Research Consultant,+86 138 0000 0023,021-5555-1023,,user23@example.com,www.example.com/card-23,示例市创新路 33 号,,faxPhone,"沈月 SHEN YUE
+研究顾问 Research Consultant
+光点 Test Works
+手机: +86 138 0000 0023
+座机: 021-5555-1023
+邮箱: user23@example.com
+网站: www.example.com/card-23
+地址: 示例市创新路 33 号"
+card_024,images/card_024.png,sources/card_024.svg,bilingual,layout_6,hard,occluded_center,"{""type"":""occlusion"",""coverage"":""small_center""}",陆川 LU CHUAN,北岸 Example Design,创意总监 Creative Director,+86 138 0000 0024,021-5555-1024,,,,示例市创新路 34 号,,faxPhone;email;website,"陆川 LU CHUAN
+创意总监 Creative Director
+北岸 Example Design
+手机: +86 138 0000 0024
+座机: 021-5555-1024
+地址: 示例市创新路 34 号"
+card_025,images/card_025.png,sources/card_025.svg,bilingual,layout_1,hard,cropped_edge,"{""type"":""crop"",""edge"":""right"",""pixels"":120}",叶青 YE QING,墨云 Sample Systems,项目经理 Project Manager,+86 138 0000 0025,,021-5556-1025,user25@example.com,www.example.com/card-25,,,officePhone;address,"叶青 YE QING
+项目经理 Project Manager
+墨云 Sample Systems
+手机: +86 138 0000 0025
+传真: 021-5556-1025
+邮箱: user25@example.com
+网站: www.example.com/card-25"
+card_026,images/card_026.png,sources/card_026.svg,bilingual,layout_2,medium,wood_desk,"{""type"":""background"",""preset"":""wood""}",Mia Zhou 周米娅,Mosaic 示例研究所,UX Designer 体验设计师,+86 138 0000 0026,021-5555-1026,,user26@example.com,www.example.com/card-26,示例市创新路 36 号,,faxPhone,"Mia Zhou 周米娅
+UX Designer 体验设计师
+Mosaic 示例研究所
+手机: +86 138 0000 0026
+座机: 021-5555-1026
+邮箱: user26@example.com
+网站: www.example.com/card-26
+地址: 示例市创新路 36 号"
+card_027,images/card_027.png,sources/card_027.svg,bilingual,layout_3,hard,patterned_desk,"{""type"":""background"",""preset"":""pattern""}",Noah Xu 徐诺,Nimbus 测试工作室,Developer 开发工程师,+86 138 0000 0027,021-5555-1027,021-5556-1027,user27@example.com,www.example.com/card-27,示例市创新路 37 号,,,"Noah Xu 徐诺
+Developer 开发工程师
+Nimbus 测试工作室
+手机: +86 138 0000 0027
+座机: 021-5555-1027
+传真: 021-5556-1027
+邮箱: user27@example.com
+网站: www.example.com/card-27
+地址: 示例市创新路 37 号"
+card_028,images/card_028.png,sources/card_028.svg,bilingual,layout_4,hard,desk_clutter,"{""type"":""background"",""preset"":""clutter""}",Iris Fang 方艾,Pinecone 示例科技,Analyst 数据分析师,+86 138 0000 0028,,,user28@example.com,,示例市创新路 38 号,,officePhone;faxPhone;website,"Iris Fang 方艾
+Analyst 数据分析师
+Pinecone 示例科技
+手机: +86 138 0000 0028
+邮箱: user28@example.com
+地址: 示例市创新路 38 号"
+card_029,images/card_029.png,sources/card_029.svg,bilingual,layout_5,hard,blur_noise_rotate,"{""type"":""combined"",""rotation"":-6,""blur"":1.1,""noise"":18}",Leo Tan 谭乐,Lumen 测试中心,Consultant 解决方案顾问,+86 138 0000 0029,021-5555-1029,021-5556-1029,user29@example.com,www.example.com/card-29,示例市创新路 39 号,,,"Leo Tan 谭乐
+Consultant 解决方案顾问
+Lumen 测试中心
+手机: +86 138 0000 0029
+座机: 021-5555-1029
+传真: 021-5556-1029
+邮箱: user29@example.com
+网站: www.example.com/card-29
+地址: 示例市创新路 39 号"
+card_030,images/card_030.png,sources/card_030.svg,bilingual,layout_6,hard,perspective_shadow_clutter,"{""type"":""combined"",""perspective"":""strong"",""shadow"":20,""background"":""clutter""}",Nina Guo 郭宁,Orbit 中文实验室,Director 技术总监,+86 138 0000 0030,021-5555-1030,021-5556-1030,user30@example.com,,,,website;address,"Nina Guo 郭宁
+Director 技术总监
+Orbit 中文实验室
+手机: +86 138 0000 0030
+座机: 021-5555-1030
+传真: 021-5556-1030
+邮箱: user30@example.com"

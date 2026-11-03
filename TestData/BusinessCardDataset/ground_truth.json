@@ -1,0 +1,903 @@
+{
+  "dataset": {
+    "name": "CamCardReplica Synthetic Business Card Dataset",
+    "version": "1.0.0",
+    "count": 30,
+    "imageSize": {
+      "width": 1400,
+      "height": 1000
+    },
+    "syntheticOnly": true,
+    "reservedEmailDomain": "example.com"
+  },
+  "records": [
+    {
+      "id": "card_001",
+      "image": "images/card_001.png",
+      "sourceSvg": "sources/card_001.svg",
+      "language": "zh",
+      "layout": "layout_1",
+      "difficulty": "easy",
+      "scenario": "clean_light",
+      "disturbance": {
+        "type": "none"
+      },
+      "fields": {
+        "name": "林晓",
+        "company": "星河示例科技",
+        "jobTitle": "产品经理",
+        "mobilePhone": "+86 138 0000 0001",
+        "officePhone": "",
+        "faxPhone": "021-5556-1001",
+        "email": "user01@example.com",
+        "website": "www.example.com/card-01",
+        "address": "示例市创新路 11 号",
+        "notes": ""
+      },
+      "missingFields": [
+        "officePhone"
+      ],
+      "ocrRawText": "林晓\n产品经理\n星河示例科技\n手机: +86 138 0000 0001\n传真: 021-5556-1001\n邮箱: user01@example.com\n网站: www.example.com/card-01\n地址: 示例市创新路 11 号"
+    },
+    {
+      "id": "card_002",
+      "image": "images/card_002.png",
+      "sourceSvg": "sources/card_002.svg",
+      "language": "zh",
+      "layout": "layout_2",
+      "difficulty": "easy",
+      "scenario": "clean_split",
+      "disturbance": {
+        "type": "none"
+      },
+      "fields": {
+        "name": "陈宇",
+        "company": "远山创意实验室",
+        "jobTitle": "iOS 工程师",
+        "mobilePhone": "+86 138 0000 0002",
+        "officePhone": "021-5555-1002",
+        "faxPhone": "",
+        "email": "user02@example.com",
+        "website": "www.example.com/card-02",
+        "address": "示例市创新路 12 号",
+        "notes": ""
+      },
+      "missingFields": [
+        "faxPhone"
+      ],
+      "ocrRawText": "陈宇\niOS 工程师\n远山创意实验室\n手机: +86 138 0000 0002\n座机: 021-5555-1002\n邮箱: user02@example.com\n网站: www.example.com/card-02\n地址: 示例市创新路 12 号"
+    },
+    {
+      "id": "card_003",
+      "image": "images/card_003.png",
+      "sourceSvg": "sources/card_003.svg",
+      "language": "zh",
+      "layout": "layout_3",
+      "difficulty": "easy",
+      "scenario": "clean_center",
+      "disturbance": {
+        "type": "none"
+      },
+      "fields": {
+        "name": "周宁",
+        "company": "蓝桥产品工作室",
+        "jobTitle": "视觉设计师",
+        "mobilePhone": "+86 138 0000 0003",
+        "officePhone": "021-5555-1003",
+        "faxPhone": "021-5556-1003",
+        "email": "user03@example.com",
+        "website": "www.example.com/card-03",
+        "address": "示例市创新路 13 号",
+        "notes": ""
+      },
+      "missingFields": [],
+      "ocrRawText": "周宁\n视觉设计师\n蓝桥产品工作室\n手机: +86 138 0000 0003\n座机: 021-5555-1003\n传真: 021-5556-1003\n邮箱: user03@example.com\n网站: www.example.com/card-03\n地址: 示例市创新路 13 号"
+    },
+    {
+      "id": "card_004",
+      "image": "images/card_004.png",
+      "sourceSvg": "sources/card_004.svg",
+      "language": "zh",
+      "layout": "layout_4",
+      "difficulty": "easy",
+      "scenario": "clean_missing_fields",
+      "disturbance": {
+        "type": "none"
+      },
+      "fields": {
+        "name": "苏然",
+        "company": "",
+        "jobTitle": "",
+        "mobilePhone": "+86 138 0000 0004",
+        "officePhone": "",
+        "faxPhone": "",
+        "email": "user04@example.com",
+        "website": "",
+        "address": "示例市创新路 14 号",
+        "notes": ""
+      },
+      "missingFields": [
+        "company",
+        "jobTitle",
+        "officePhone",
+        "faxPhone",
+        "website"
+      ],
+      "ocrRawText": "苏然\n手机: +86 138 0000 0004\n邮箱: user04@example.com\n地址: 示例市创新路 14 号"
+    },
+    {
+      "id": "card_005",
+      "image": "images/card_005.png",
+      "sourceSvg": "sources/card_005.svg",
+      "language": "zh",
+      "layout": "layout_5",
+      "difficulty": "easy",
+      "scenario": "clean_dark_card",
+      "disturbance": {
+        "type": "none"
+      },
+      "fields": {
+        "name": "王澈",
+        "company": "云帆设计事务所",
+        "jobTitle": "客户顾问",
+        "mobilePhone": "+86 138 0000 0005",
+        "officePhone": "021-5555-1005",
+        "faxPhone": "021-5556-1005",
+        "email": "user05@example.com",
+        "website": "www.example.com/card-05",
+        "address": "",
+        "notes": ""
+      },
+      "missingFields": [
+        "address"
+      ],
+      "ocrRawText": "王澈\n客户顾问\n云帆设计事务所\n手机: +86 138 0000 0005\n座机: 021-5555-1005\n传真: 021-5556-1005\n邮箱: user05@example.com\n网站: www.example.com/card-05"
+    },
+    {
+      "id": "card_006",
+      "image": "images/card_006.png",
+      "sourceSvg": "sources/card_006.svg",
+      "language": "zh",
+      "layout": "layout_6",
+      "difficulty": "easy",
+      "scenario": "clean_bilingual",
+      "disturbance": {
+        "type": "none"
+      },
+      "fields": {
+        "name": "李安",
+        "company": "松林移动实验室",
+        "jobTitle": "移动端开发工程师",
+        "mobilePhone": "+86 138 0000 0006",
+        "officePhone": "021-5555-1006",
+        "faxPhone": "",
+        "email": "user06@example.com",
+        "website": "www.example.com/card-06",
+        "address": "示例市创新路 16 号",
+        "notes": ""
+      },
+      "missingFields": [
+        "faxPhone"
+      ],
+      "ocrRawText": "李安\n移动端开发工程师\n松林移动实验室\n手机: +86 138 0000 0006\n座机: 021-5555-1006\n邮箱: user06@example.com\n网站: www.example.com/card-06\n地址: 示例市创新路 16 号"
+    },
+    {
+      "id": "card_007",
+      "image": "images/card_007.png",
+      "sourceSvg": "sources/card_007.svg",
+      "language": "zh",
+      "layout": "layout_1",
+      "difficulty": "medium",
+      "scenario": "rotate_minus_3",
+      "disturbance": {
+        "type": "rotation",
+        "degrees": -3
+      },
+      "fields": {
+        "name": "赵晨",
+        "company": "白塔交互工作室",
+        "jobTitle": "交互设计师",
+        "mobilePhone": "+86 138 0000 0007",
+        "officePhone": "",
+        "faxPhone": "",
+        "email": "user07@example.com",
+        "website": "www.example.com/card-07",
+        "address": "示例市创新路 17 号",
+        "notes": ""
+      },
+      "missingFields": [
+        "officePhone",
+        "faxPhone"
+      ],
+      "ocrRawText": "赵晨\n交互设计师\n白塔交互工作室\n手机: +86 138 0000 0007\n邮箱: user07@example.com\n网站: www.example.com/card-07\n地址: 示例市创新路 17 号"
+    },
+    {
+      "id": "card_008",
+      "image": "images/card_008.png",
+      "sourceSvg": "sources/card_008.svg",
+      "language": "zh",
+      "layout": "layout_2",
+      "difficulty": "medium",
+      "scenario": "rotate_plus_5",
+      "disturbance": {
+        "type": "rotation",
+        "degrees": 5
+      },
+      "fields": {
+        "name": "何静",
+        "company": "微光咨询",
+        "jobTitle": "研究员",
+        "mobilePhone": "+86 138 0000 0008",
+        "officePhone": "021-5555-1008",
+        "faxPhone": "021-5556-1008",
+        "email": "user08@example.com",
+        "website": "",
+        "address": "示例市创新路 18 号",
+        "notes": ""
+      },
+      "missingFields": [
+        "website"
+      ],
+      "ocrRawText": "何静\n研究员\n微光咨询\n手机: +86 138 0000 0008\n座机: 021-5555-1008\n传真: 021-5556-1008\n邮箱: user08@example.com\n地址: 示例市创新路 18 号"
+    },
+    {
+      "id": "card_009",
+      "image": "images/card_009.png",
+      "sourceSvg": "sources/card_009.svg",
+      "language": "zh",
+      "layout": "layout_3",
+      "difficulty": "medium",
+      "scenario": "rotate_minus_8",
+      "disturbance": {
+        "type": "rotation",
+        "degrees": -8
+      },
+      "fields": {
+        "name": "孙悦",
+        "company": "方舟示例网络",
+        "jobTitle": "项目主管",
+        "mobilePhone": "+86 138 0000 0009",
+        "officePhone": "021-5555-1009",
+        "faxPhone": "",
+        "email": "",
+        "website": "",
+        "address": "示例市创新路 19 号",
+        "notes": ""
+      },
+      "missingFields": [
+        "faxPhone",
+        "email",
+        "website"
+      ],
+      "ocrRawText": "孙悦\n项目主管\n方舟示例网络\n手机: +86 138 0000 0009\n座机: 021-5555-1009\n地址: 示例市创新路 19 号"
+    },
+    {
+      "id": "card_010",
+      "image": "images/card_010.png",
+      "sourceSvg": "sources/card_010.svg",
+      "language": "zh",
+      "layout": "layout_4",
+      "difficulty": "medium",
+      "scenario": "rotate_plus_10",
+      "disturbance": {
+        "type": "rotation",
+        "degrees": 10
+      },
+      "fields": {
+        "name": "郑航",
+        "company": "新叶创新中心",
+        "jobTitle": "技术总监",
+        "mobilePhone": "+86 138 0000 0010",
+        "officePhone": "021-5555-1010",
+        "faxPhone": "021-5556-1010",
+        "email": "user10@example.com",
+        "website": "www.example.com/card-10",
+        "address": "",
+        "notes": ""
+      },
+      "missingFields": [
+        "address"
+      ],
+      "ocrRawText": "郑航\n技术总监\n新叶创新中心\n手机: +86 138 0000 0010\n座机: 021-5555-1010\n传真: 021-5556-1010\n邮箱: user10@example.com\n网站: www.example.com/card-10"
+    },
+    {
+      "id": "card_011",
+      "image": "images/card_011.png",
+      "sourceSvg": "sources/card_011.svg",
+      "language": "en",
+      "layout": "layout_5",
+      "difficulty": "hard",
+      "scenario": "rotate_90",
+      "disturbance": {
+        "type": "rotation",
+        "degrees": 90
+      },
+      "fields": {
+        "name": "Avery Stone",
+        "company": "Northstar Example Labs",
+        "jobTitle": "Product Designer",
+        "mobilePhone": "+1 415 555 1011",
+        "officePhone": "+1 212 555 2011",
+        "faxPhone": "",
+        "email": "user11@example.com",
+        "website": "www.example.com/card-11",
+        "address": "111 Example Avenue, Test City",
+        "notes": ""
+      },
+      "missingFields": [
+        "faxPhone"
+      ],
+      "ocrRawText": "Avery Stone\nProduct Designer\nNorthstar Example Labs\nMobile: +1 415 555 1011\nOffice: +1 212 555 2011\nEmail: user11@example.com\nWebsite: www.example.com/card-11\nAddress: 111 Example Avenue, Test City"
+    },
+    {
+      "id": "card_012",
+      "image": "images/card_012.png",
+      "sourceSvg": "sources/card_012.svg",
+      "language": "en",
+      "layout": "layout_6",
+      "difficulty": "hard",
+      "scenario": "rotate_180",
+      "disturbance": {
+        "type": "rotation",
+        "degrees": 180
+      },
+      "fields": {
+        "name": "Jordan Lee",
+        "company": "Harborline Studio",
+        "jobTitle": "Engineering Manager",
+        "mobilePhone": "+1 415 555 1012",
+        "officePhone": "+1 212 555 2012",
+        "faxPhone": "+1 646 555 3012",
+        "email": "user12@example.com",
+        "website": "",
+        "address": "112 Example Avenue, Test City",
+        "notes": ""
+      },
+      "missingFields": [
+        "website"
+      ],
+      "ocrRawText": "Jordan Lee\nEngineering Manager\nHarborline Studio\nMobile: +1 415 555 1012\nOffice: +1 212 555 2012\nFax: +1 646 555 3012\nEmail: user12@example.com\nAddress: 112 Example Avenue, Test City"
+    },
+    {
+      "id": "card_013",
+      "image": "images/card_013.png",
+      "sourceSvg": "sources/card_013.svg",
+      "language": "en",
+      "layout": "layout_1",
+      "difficulty": "medium",
+      "scenario": "perspective_left",
+      "disturbance": {
+        "type": "perspective",
+        "preset": "left"
+      },
+      "fields": {
+        "name": "Morgan Reed",
+        "company": "Cedar Test Systems",
+        "jobTitle": "Research Analyst",
+        "mobilePhone": "+1 415 555 1013",
+        "officePhone": "",
+        "faxPhone": "",
+        "email": "user13@example.com",
+        "website": "www.example.com/card-13",
+        "address": "113 Example Avenue, Test City",
+        "notes": ""
+      },
+      "missingFields": [
+        "officePhone",
+        "faxPhone"
+      ],
+      "ocrRawText": "Morgan Reed\nResearch Analyst\nCedar Test Systems\nMobile: +1 415 555 1013\nEmail: user13@example.com\nWebsite: www.example.com/card-13\nAddress: 113 Example Avenue, Test City"
+    },
+    {
+      "id": "card_014",
+      "image": "images/card_014.png",
+      "sourceSvg": "sources/card_014.svg",
+      "language": "en",
+      "layout": "layout_2",
+      "difficulty": "medium",
+      "scenario": "perspective_right",
+      "disturbance": {
+        "type": "perspective",
+        "preset": "right"
+      },
+      "fields": {
+        "name": "Taylor Quinn",
+        "company": "Blue Orbit Design",
+        "jobTitle": "",
+        "mobilePhone": "+1 415 555 1014",
+        "officePhone": "+1 212 555 2014",
+        "faxPhone": "",
+        "email": "user14@example.com",
+        "website": "www.example.com/card-14",
+        "address": "114 Example Avenue, Test City",
+        "notes": ""
+      },
+      "missingFields": [
+        "jobTitle",
+        "faxPhone"
+      ],
+      "ocrRawText": "Taylor Quinn\nBlue Orbit Design\nMobile: +1 415 555 1014\nOffice: +1 212 555 2014\nEmail: user14@example.com\nWebsite: www.example.com/card-14\nAddress: 114 Example Avenue, Test City"
+    },
+    {
+      "id": "card_015",
+      "image": "images/card_015.png",
+      "sourceSvg": "sources/card_015.svg",
+      "language": "en",
+      "layout": "layout_3",
+      "difficulty": "medium",
+      "scenario": "perspective_top_narrow",
+      "disturbance": {
+        "type": "perspective",
+        "preset": "top_narrow"
+      },
+      "fields": {
+        "name": "Casey Park",
+        "company": "Sample Peak Consulting",
+        "jobTitle": "Solutions Consultant",
+        "mobilePhone": "+1 415 555 1015",
+        "officePhone": "+1 212 555 2015",
+        "faxPhone": "+1 646 555 3015",
+        "email": "user15@example.com",
+        "website": "www.example.com/card-15",
+        "address": "",
+        "notes": ""
+      },
+      "missingFields": [
+        "address"
+      ],
+      "ocrRawText": "Casey Park\nSolutions Consultant\nSample Peak Consulting\nMobile: +1 415 555 1015\nOffice: +1 212 555 2015\nFax: +1 646 555 3015\nEmail: user15@example.com\nWebsite: www.example.com/card-15"
+    },
+    {
+      "id": "card_016",
+      "image": "images/card_016.png",
+      "sourceSvg": "sources/card_016.svg",
+      "language": "en",
+      "layout": "layout_4",
+      "difficulty": "medium",
+      "scenario": "perspective_bottom_narrow",
+      "disturbance": {
+        "type": "perspective",
+        "preset": "bottom_narrow"
+      },
+      "fields": {
+        "name": "Riley Chen",
+        "company": "Riverbend Product Lab",
+        "jobTitle": "Mobile Engineer",
+        "mobilePhone": "+1 415 555 1016",
+        "officePhone": "",
+        "faxPhone": "",
+        "email": "user16@example.com",
+        "website": "",
+        "address": "116 Example Avenue, Test City",
+        "notes": ""
+      },
+      "missingFields": [
+        "officePhone",
+        "faxPhone",
+        "website"
+      ],
+      "ocrRawText": "Riley Chen\nMobile Engineer\nRiverbend Product Lab\nMobile: +1 415 555 1016\nEmail: user16@example.com\nAddress: 116 Example Avenue, Test City"
+    },
+    {
+      "id": "card_017",
+      "image": "images/card_017.png",
+      "sourceSvg": "sources/card_017.svg",
+      "language": "en",
+      "layout": "layout_5",
+      "difficulty": "hard",
+      "scenario": "perspective_keystone",
+      "disturbance": {
+        "type": "perspective",
+        "preset": "keystone"
+      },
+      "fields": {
+        "name": "Jamie Lin",
+        "company": "Atlas Example Works",
+        "jobTitle": "UX Researcher",
+        "mobilePhone": "+1 415 555 1017",
+        "officePhone": "+1 212 555 2017",
+        "faxPhone": "",
+        "email": "user17@example.com",
+        "website": "www.example.com/card-17",
+        "address": "117 Example Avenue, Test City",
+        "notes": ""
+      },
+      "missingFields": [
+        "faxPhone"
+      ],
+      "ocrRawText": "Jamie Lin\nUX Researcher\nAtlas Example Works\nMobile: +1 415 555 1017\nOffice: +1 212 555 2017\nEmail: user17@example.com\nWebsite: www.example.com/card-17\nAddress: 117 Example Avenue, Test City"
+    },
+    {
+      "id": "card_018",
+      "image": "images/card_018.png",
+      "sourceSvg": "sources/card_018.svg",
+      "language": "en",
+      "layout": "layout_6",
+      "difficulty": "hard",
+      "scenario": "perspective_strong",
+      "disturbance": {
+        "type": "perspective",
+        "preset": "strong"
+      },
+      "fields": {
+        "name": "Cameron Wu",
+        "company": "Paper Kite Mobile",
+        "jobTitle": "Product Lead",
+        "mobilePhone": "+1 415 555 1018",
+        "officePhone": "+1 212 555 2018",
+        "faxPhone": "+1 646 555 3018",
+        "email": "user18@example.com",
+        "website": "www.example.com/card-18",
+        "address": "118 Example Avenue, Test City",
+        "notes": ""
+      },
+      "missingFields": [],
+      "ocrRawText": "Cameron Wu\nProduct Lead\nPaper Kite Mobile\nMobile: +1 415 555 1018\nOffice: +1 212 555 2018\nFax: +1 646 555 3018\nEmail: user18@example.com\nWebsite: www.example.com/card-18\nAddress: 118 Example Avenue, Test City"
+    },
+    {
+      "id": "card_019",
+      "image": "images/card_019.png",
+      "sourceSvg": "sources/card_019.svg",
+      "language": "en",
+      "layout": "layout_1",
+      "difficulty": "medium",
+      "scenario": "soft_shadow",
+      "disturbance": {
+        "type": "shadow",
+        "radius": 28,
+        "offset": [
+          28,
+          30
+        ]
+      },
+      "fields": {
+        "name": "Robin Hale",
+        "company": "",
+        "jobTitle": "Account Director",
+        "mobilePhone": "+1 415 555 1019",
+        "officePhone": "",
+        "faxPhone": "",
+        "email": "user19@example.com",
+        "website": "www.example.com/card-19",
+        "address": "119 Example Avenue, Test City",
+        "notes": ""
+      },
+      "missingFields": [
+        "company",
+        "officePhone",
+        "faxPhone"
+      ],
+      "ocrRawText": "Robin Hale\nAccount Director\nMobile: +1 415 555 1019\nEmail: user19@example.com\nWebsite: www.example.com/card-19\nAddress: 119 Example Avenue, Test City"
+    },
+    {
+      "id": "card_020",
+      "image": "images/card_020.png",
+      "sourceSvg": "sources/card_020.svg",
+      "language": "en",
+      "layout": "layout_2",
+      "difficulty": "medium",
+      "scenario": "hard_shadow",
+      "disturbance": {
+        "type": "shadow",
+        "radius": 8,
+        "offset": [
+          38,
+          42
+        ]
+      },
+      "fields": {
+        "name": "Devon Shaw",
+        "company": "Placeholder Ventures",
+        "jobTitle": "Technical Advisor",
+        "mobilePhone": "+1 415 555 1020",
+        "officePhone": "+1 212 555 2020",
+        "faxPhone": "+1 646 555 3020",
+        "email": "user20@example.com",
+        "website": "",
+        "address": "",
+        "notes": ""
+      },
+      "missingFields": [
+        "website",
+        "address"
+      ],
+      "ocrRawText": "Devon Shaw\nTechnical Advisor\nPlaceholder Ventures\nMobile: +1 415 555 1020\nOffice: +1 212 555 2020\nFax: +1 646 555 3020\nEmail: user20@example.com"
+    },
+    {
+      "id": "card_021",
+      "image": "images/card_021.png",
+      "sourceSvg": "sources/card_021.svg",
+      "language": "bilingual",
+      "layout": "layout_3",
+      "difficulty": "hard",
+      "scenario": "low_contrast",
+      "disturbance": {
+        "type": "low_contrast",
+        "contrast": 0.42
+      },
+      "fields": {
+        "name": "顾岚 GU LAN",
+        "company": "山海 Example Lab",
+        "jobTitle": "产品设计师 Product Designer",
+        "mobilePhone": "+86 138 0000 0021",
+        "officePhone": "021-5555-1021",
+        "faxPhone": "",
+        "email": "user21@example.com",
+        "website": "www.example.com/card-21",
+        "address": "示例市创新路 31 号",
+        "notes": ""
+      },
+      "missingFields": [
+        "faxPhone"
+      ],
+      "ocrRawText": "顾岚 GU LAN\n产品设计师 Product Designer\n山海 Example Lab\n手机: +86 138 0000 0021\n座机: 021-5555-1021\n邮箱: user21@example.com\n网站: www.example.com/card-21\n地址: 示例市创新路 31 号"
+    },
+    {
+      "id": "card_022",
+      "image": "images/card_022.png",
+      "sourceSvg": "sources/card_022.svg",
+      "language": "bilingual",
+      "layout": "layout_4",
+      "difficulty": "medium",
+      "scenario": "dark_scene",
+      "disturbance": {
+        "type": "dark_background"
+      },
+      "fields": {
+        "name": "韩松 HAN SONG",
+        "company": "青石 Sample Studio",
+        "jobTitle": "软件工程师 Software Engineer",
+        "mobilePhone": "+86 138 0000 0022",
+        "officePhone": "",
+        "faxPhone": "021-5556-1022",
+        "email": "user22@example.com",
+        "website": "www.example.com/card-22",
+        "address": "示例市创新路 32 号",
+        "notes": ""
+      },
+      "missingFields": [
+        "officePhone"
+      ],
+      "ocrRawText": "韩松 HAN SONG\n软件工程师 Software Engineer\n青石 Sample Studio\n手机: +86 138 0000 0022\n传真: 021-5556-1022\n邮箱: user22@example.com\n网站: www.example.com/card-22\n地址: 示例市创新路 32 号"
+    },
+    {
+      "id": "card_023",
+      "image": "images/card_023.png",
+      "sourceSvg": "sources/card_023.svg",
+      "language": "bilingual",
+      "layout": "layout_5",
+      "difficulty": "hard",
+      "scenario": "occluded_corner",
+      "disturbance": {
+        "type": "occlusion",
+        "coverage": "corner"
+      },
+      "fields": {
+        "name": "沈月 SHEN YUE",
+        "company": "光点 Test Works",
+        "jobTitle": "研究顾问 Research Consultant",
+        "mobilePhone": "+86 138 0000 0023",
+        "officePhone": "021-5555-1023",
+        "faxPhone": "",
+        "email": "user23@example.com",
+        "website": "www.example.com/card-23",
+        "address": "示例市创新路 33 号",
+        "notes": ""
+      },
+      "missingFields": [
+        "faxPhone"
+      ],
+      "ocrRawText": "沈月 SHEN YUE\n研究顾问 Research Consultant\n光点 Test Works\n手机: +86 138 0000 0023\n座机: 021-5555-1023\n邮箱: user23@example.com\n网站: www.example.com/card-23\n地址: 示例市创新路 33 号"
+    },
+    {
+      "id": "card_024",
+      "image": "images/card_024.png",
+      "sourceSvg": "sources/card_024.svg",
+      "language": "bilingual",
+      "layout": "layout_6",
+      "difficulty": "hard",
+      "scenario": "occluded_center",
+      "disturbance": {
+        "type": "occlusion",
+        "coverage": "small_center"
+      },
+      "fields": {
+        "name": "陆川 LU CHUAN",
+        "company": "北岸 Example Design",
+        "jobTitle": "创意总监 Creative Director",
+        "mobilePhone": "+86 138 0000 0024",
+        "officePhone": "021-5555-1024",
+        "faxPhone": "",
+        "email": "",
+        "website": "",
+        "address": "示例市创新路 34 号",
+        "notes": ""
+      },
+      "missingFields": [
+        "faxPhone",
+        "email",
+        "website"
+      ],
+      "ocrRawText": "陆川 LU CHUAN\n创意总监 Creative Director\n北岸 Example Design\n手机: +86 138 0000 0024\n座机: 021-5555-1024\n地址: 示例市创新路 34 号"
+    },
+    {
+      "id": "card_025",
+      "image": "images/card_025.png",
+      "sourceSvg": "sources/card_025.svg",
+      "language": "bilingual",
+      "layout": "layout_1",
+      "difficulty": "hard",
+      "scenario": "cropped_edge",
+      "disturbance": {
+        "type": "crop",
+        "edge": "right",
+        "pixels": 120
+      },
+      "fields": {
+        "name": "叶青 YE QING",
+        "company": "墨云 Sample Systems",
+        "jobTitle": "项目经理 Project Manager",
+        "mobilePhone": "+86 138 0000 0025",
+        "officePhone": "",
+        "faxPhone": "021-5556-1025",
+        "email": "user25@example.com",
+        "website": "www.example.com/card-25",
+        "address": "",
+        "notes": ""
+      },
+      "missingFields": [
+        "officePhone",
+        "address"
+      ],
+      "ocrRawText": "叶青 YE QING\n项目经理 Project Manager\n墨云 Sample Systems\n手机: +86 138 0000 0025\n传真: 021-5556-1025\n邮箱: user25@example.com\n网站: www.example.com/card-25"
+    },
+    {
+      "id": "card_026",
+      "image": "images/card_026.png",
+      "sourceSvg": "sources/card_026.svg",
+      "language": "bilingual",
+      "layout": "layout_2",
+      "difficulty": "medium",
+      "scenario": "wood_desk",
+      "disturbance": {
+        "type": "background",
+        "preset": "wood"
+      },
+      "fields": {
+        "name": "Mia Zhou 周米娅",
+        "company": "Mosaic 示例研究所",
+        "jobTitle": "UX Designer 体验设计师",
+        "mobilePhone": "+86 138 0000 0026",
+        "officePhone": "021-5555-1026",
+        "faxPhone": "",
+        "email": "user26@example.com",
+        "website": "www.example.com/card-26",
+        "address": "示例市创新路 36 号",
+        "notes": ""
+      },
+      "missingFields": [
+        "faxPhone"
+      ],
+      "ocrRawText": "Mia Zhou 周米娅\nUX Designer 体验设计师\nMosaic 示例研究所\n手机: +86 138 0000 0026\n座机: 021-5555-1026\n邮箱: user26@example.com\n网站: www.example.com/card-26\n地址: 示例市创新路 36 号"
+    },
+    {
+      "id": "card_027",
+      "image": "images/card_027.png",
+      "sourceSvg": "sources/card_027.svg",
+      "language": "bilingual",
+      "layout": "layout_3",
+      "difficulty": "hard",
+      "scenario": "patterned_desk",
+      "disturbance": {
+        "type": "background",
+        "preset": "pattern"
+      },
+      "fields": {
+        "name": "Noah Xu 徐诺",
+        "company": "Nimbus 测试工作室",
+        "jobTitle": "Developer 开发工程师",
+        "mobilePhone": "+86 138 0000 0027",
+        "officePhone": "021-5555-1027",
+        "faxPhone": "021-5556-1027",
+        "email": "user27@example.com",
+        "website": "www.example.com/card-27",
+        "address": "示例市创新路 37 号",
+        "notes": ""
+      },
+      "missingFields": [],
+      "ocrRawText": "Noah Xu 徐诺\nDeveloper 开发工程师\nNimbus 测试工作室\n手机: +86 138 0000 0027\n座机: 021-5555-1027\n传真: 021-5556-1027\n邮箱: user27@example.com\n网站: www.example.com/card-27\n地址: 示例市创新路 37 号"
+    },
+    {
+      "id": "card_028",
+      "image": "images/card_028.png",
+      "sourceSvg": "sources/card_028.svg",
+      "language": "bilingual",
+      "layout": "layout_4",
+      "difficulty": "hard",
+      "scenario": "desk_clutter",
+      "disturbance": {
+        "type": "background",
+        "preset": "clutter"
+      },
+      "fields": {
+        "name": "Iris Fang 方艾",
+        "company": "Pinecone 示例科技",
+        "jobTitle": "Analyst 数据分析师",
+        "mobilePhone": "+86 138 0000 0028",
+        "officePhone": "",
+        "faxPhone": "",
+        "email": "user28@example.com",
+        "website": "",
+        "address": "示例市创新路 38 号",
+        "notes": ""
+      },
+      "missingFields": [
+        "officePhone",
+        "faxPhone",
+        "website"
+      ],
+      "ocrRawText": "Iris Fang 方艾\nAnalyst 数据分析师\nPinecone 示例科技\n手机: +86 138 0000 0028\n邮箱: user28@example.com\n地址: 示例市创新路 38 号"
+    },
+    {
+      "id": "card_029",
+      "image": "images/card_029.png",
+      "sourceSvg": "sources/card_029.svg",
+      "language": "bilingual",
+      "layout": "layout_5",
+      "difficulty": "hard",
+      "scenario": "blur_noise_rotate",
+      "disturbance": {
+        "type": "combined",
+        "rotation": -6,
+        "blur": 1.1,
+        "noise": 18
+      },
+      "fields": {
+        "name": "Leo Tan 谭乐",
+        "company": "Lumen 测试中心",
+        "jobTitle": "Consultant 解决方案顾问",
+        "mobilePhone": "+86 138 0000 0029",
+        "officePhone": "021-5555-1029",
+        "faxPhone": "021-5556-1029",
+        "email": "user29@example.com",
+        "website": "www.example.com/card-29",
+        "address": "示例市创新路 39 号",
+        "notes": ""
+      },
+      "missingFields": [],
+      "ocrRawText": "Leo Tan 谭乐\nConsultant 解决方案顾问\nLumen 测试中心\n手机: +86 138 0000 0029\n座机: 021-5555-1029\n传真: 021-5556-1029\n邮箱: user29@example.com\n网站: www.example.com/card-29\n地址: 示例市创新路 39 号"
+    },
+    {
+      "id": "card_030",
+      "image": "images/card_030.png",
+      "sourceSvg": "sources/card_030.svg",
+      "language": "bilingual",
+      "layout": "layout_6",
+      "difficulty": "hard",
+      "scenario": "perspective_shadow_clutter",
+      "disturbance": {
+        "type": "combined",
+        "perspective": "strong",
+        "shadow": 20,
+        "background": "clutter"
+      },
+      "fields": {
+        "name": "Nina Guo 郭宁",
+        "company": "Orbit 中文实验室",
+        "jobTitle": "Director 技术总监",
+        "mobilePhone": "+86 138 0000 0030",
+        "officePhone": "021-5555-1030",
+        "faxPhone": "021-5556-1030",
+        "email": "user30@example.com",
+        "website": "",
+        "address": "",
+        "notes": ""
+      },
+      "missingFields": [
+        "website",
+        "address"
+      ],
+      "ocrRawText": "Nina Guo 郭宁\nDirector 技术总监\nOrbit 中文实验室\n手机: +86 138 0000 0030\n座机: 021-5555-1030\n传真: 021-5556-1030\n邮箱: user30@example.com"
+    }
+  ]
+}

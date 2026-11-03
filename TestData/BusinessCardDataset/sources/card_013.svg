@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="1050" viewBox="0 0 1050 1050">
+<g transform="translate(0 225)">
+<rect width="1050" height="600" rx="26" fill="#ffffff"/>
+<rect width="24" height="600" fill="#1877d2"/>
+<circle cx="920" cy="96" r="54" fill="#1877d2" opacity="0.16"/>
+<text x="78" y="112" fill="#10243e" font-size="50" font-weight="700" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Morgan Reed</text>
+<text x="78" y="166" fill="#526170" font-size="25" font-weight="500" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Research Analyst</text>
+<text x="78" y="218" fill="#1877d2" font-size="28" font-weight="650" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Cedar Test Systems</text>
+<text x="78" y="316" fill="#526170" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Mobile: +1 415 555 1013</text>
+<text x="78" y="358" fill="#526170" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Email: user13@example.com</text>
+<text x="78" y="400" fill="#526170" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Website: www.example.com/card-13</text>
+<text x="78" y="442" fill="#526170" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Address: 113 Example Avenue, Test City</text>
+</g>
+</svg>

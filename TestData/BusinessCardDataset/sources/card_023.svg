@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="1050" viewBox="0 0 1050 1050">
+<g transform="translate(0 225)">
+<rect width="1050" height="600" rx="26" fill="#10243e"/>
+<rect x="62" y="64" width="10" height="472" fill="#5bc0eb"/>
+<circle cx="930" cy="490" r="120" fill="#5bc0eb" opacity="0.12"/>
+<text x="110" y="112" fill="#f5f8ff" font-size="50" font-weight="700" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">沈月 SHEN YUE</text>
+<text x="110" y="166" fill="#c8d7ea" font-size="25" font-weight="500" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">研究顾问 Research Consultant</text>
+<text x="110" y="218" fill="#5bc0eb" font-size="28" font-weight="650" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">光点 Test Works</text>
+<text x="110" y="316" fill="#c8d7ea" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">手机 / Mobile: +86 138 0000 0023</text>
+<text x="110" y="358" fill="#c8d7ea" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">座机 / Office: 021-5555-1023</text>
+<text x="110" y="400" fill="#c8d7ea" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">邮箱 / Email: user23@example.com</text>
+<text x="110" y="442" fill="#c8d7ea" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">网站 / Web: www.example.com/card-23</text>
+<text x="110" y="484" fill="#c8d7ea" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">地址 / Address: 示例市创新路 33 号</text>
+</g>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="1050" viewBox="0 0 1050 1050">
+<g transform="translate(0 225)">
+<rect width="1050" height="600" rx="26" fill="#f7fbff"/>
+<rect x="0" y="0" width="390" height="600" fill="#e06a43"/>
+<path d="M390 0 L470 0 L390 600 Z" fill="#ffffff" opacity="0.2"/>
+<text x="58" y="138" fill="#ffffff" font-size="48" font-weight="700" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">何静</text>
+<text x="58" y="194" fill="#ffffff" font-size="24" font-weight="500" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">研究员</text>
+<text x="58" y="242" fill="#ffffff" font-size="25" font-weight="600" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">微光咨询</text>
+<text x="455" y="132" fill="#10243e" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">手机: +86 138 0000 0008</text>
+<text x="455" y="200" fill="#10243e" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">座机: 021-5555-1008</text>
+<text x="455" y="268" fill="#10243e" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">传真: 021-5556-1008</text>
+<text x="455" y="336" fill="#10243e" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">邮箱: user08@example.com</text>
+<text x="455" y="404" fill="#10243e" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">地址: 示例市创新路 18 号</text>
+</g>
+</svg>

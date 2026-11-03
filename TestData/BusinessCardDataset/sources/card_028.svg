@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="1050" viewBox="0 0 1050 1050">
+<g transform="translate(0 225)">
+<rect width="1050" height="600" rx="26" fill="#f4f7f8"/>
+<path d="M0 440 L300 600 L0 600 Z" fill="#7b61b3" opacity="0.2"/>
+<path d="M1050 0 L760 0 L1050 180 Z" fill="#7b61b3" opacity="0.22"/>
+<text x="78" y="112" fill="#10243e" font-size="50" font-weight="700" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Iris Fang 方艾</text>
+<text x="78" y="166" fill="#526170" font-size="25" font-weight="500" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Analyst 数据分析师</text>
+<text x="78" y="218" fill="#7b61b3" font-size="28" font-weight="650" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Pinecone 示例科技</text>
+<text x="78" y="316" fill="#526170" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">手机 / Mobile: +86 138 0000 0028</text>
+<text x="78" y="358" fill="#526170" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">邮箱 / Email: user28@example.com</text>
+<text x="78" y="400" fill="#526170" font-size="22" font-weight="400" text-anchor="start" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">地址 / Address: 示例市创新路 38 号</text>
+</g>
+</svg>

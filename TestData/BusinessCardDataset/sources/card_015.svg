@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="1050" viewBox="0 0 1050 1050">
+<g transform="translate(0 225)">
+<rect width="1050" height="600" rx="26" fill="#fffdf8"/>
+<circle cx="525" cy="98" r="38" fill="#1f9d79"/>
+<rect x="365" y="184" width="320" height="4" fill="#1f9d79"/>
+<text x="525" y="152" fill="#10243e" font-size="48" font-weight="700" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Casey Park</text>
+<text x="525" y="228" fill="#526170" font-size="25" font-weight="500" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Solutions Consultant</text>
+<text x="525" y="270" fill="#1f9d79" font-size="26" font-weight="600" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Sample Peak Consulting</text>
+<text x="525" y="342" fill="#526170" font-size="20" font-weight="400" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Mobile: +1 415 555 1015</text>
+<text x="525" y="380" fill="#526170" font-size="20" font-weight="400" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Office: +1 212 555 2015</text>
+<text x="525" y="418" fill="#526170" font-size="20" font-weight="400" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Fax: +1 646 555 3015</text>
+<text x="525" y="456" fill="#526170" font-size="20" font-weight="400" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Email: user15@example.com</text>
+<text x="525" y="494" fill="#526170" font-size="20" font-weight="400" text-anchor="middle" font-family="PingFang SC, Helvetica Neue, Arial, sans-serif">Website: www.example.com/card-15</text>
+</g>
+</svg>
